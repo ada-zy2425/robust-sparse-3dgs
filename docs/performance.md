@@ -24,3 +24,5 @@ The corrected matched BA-operation seed-42 controls applied the same `dtype_scen
 The earlier South Building 3k control remains a separate quality/cost example. It used 220,795 instead of 641,484 Gaussians, reduced optimization time from 302.4 to 118.7 seconds and PLY size from 151.4 to 52.1 MB. Its mean render latency fell from 2.607 to 2.067 ms and peak memory from 707.4 to 267.1 MB, but LPIPS worsened from 0.3516 to 0.4633. It is therefore a selectable schedule tradeoff rather than a universal optimization win.
 
 Machine-readable distributions and hashes are under `reports/performance/`. Viewer interaction has been browser-validated, but no browser end-to-end latency claim is made.
+
+The separate controlled pose matrix did not add another all-camera latency benchmark because its frozen deliverables were quality, training cost, peak memory and model size. Across eight new 7k arms, training took 1,693.8–1,805.6 seconds, peak allocated memory was 3.53–6.07 GiB and final models contained 562,262–814,686 Gaussians. The matrix consumed 3.987086 GPUh. These costs accompany measured quality losses and are not presented as a performance optimization.

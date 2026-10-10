@@ -42,6 +42,14 @@ This confirmation does not imply a final-set image-quality victory: failed COLMA
 
 Three dependency failures are preserved rather than rewritten: v1 lacked the VGGSfM tracker, v2 lacked offline DINOv2 source, and v3's first attempt lacked ALIKED. After exact cache qualification, unchanged v3 used its sole reasoned retry and completed. The successful retry also exposed and cached SuperPoint. BA is an upstream established technique; the project contribution here is controlled diagnosis, offline qualification and evidence accounting.
 
+## Controlled pose sensitivity
+
+The frozen bonsai/room protocol perturbed only training cameras after alignment. An actual pinned Dataset probe confirmed the modified float32 poses were read, while initialization files, points, intrinsics, RGB and held-out cameras remained fixed. Every new 7k run completed continuously.
+
+The fixed direction set produced monotone image-space degradation. Rotation 0.5°/1.0° changed PSNR by -0.312/-0.910 dB on bonsai and -2.034/-3.198 dB on room. Translation 0.5%/1.0% of training-camera radius changed it by -0.081/-0.207 and -0.278/-1.372 dB. Fixed panels show increased ghosting, smearing and loss of foliage/spokes/keyboard/glassware edges. Baseline boundary, occlusion and poorly observed-region errors remain visible, so they are not newly attributed to pose noise.
+
+This is a sensitivity test on estimated poses, not known absolute pose-error calibration. One seed and one per-camera direction set cannot establish a general noise distribution or statistical robustness; there is no geometry ground truth.
+
 ## Limits
 
 - Evidence covers three development and three final scenes with one seed per main arm; it diagnoses repeatable behavior but is not a strong statistical generalization claim.

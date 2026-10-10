@@ -105,7 +105,38 @@ This exercised command reuses the already immutable seed-42 pre/post reconstruct
 
 The exercised training-randomness repeat used a new immutable identity and explicit remaining-budget bounds: `--revision floor_v3 --seed 43 --reuse-pair-revision v1 --pair-seed 42 --splat-numerics-policy dtype_scene_scale_floor_v1 --max-gpu-hours 0.7 --timeout-s 2400`. The unused `floor_v2` materialization was rejected before queue addition because its 4200-second timeout exceeded that reservation; it consumed zero GPU and was not overwritten.
 
-## 5. Evaluation and performance
+## 5. Controlled pose-sensitivity matrix
+
+This exercised development-only command reuses the immutable post-BA seed-42 reconstruction pair and the existing zero runs. It creates four new conditions per scene: rotation 0.5°/1.0° and translation 0.5%/1.0% of the unperturbed training-camera radius. Use a new revision for any repeat; `v1` is immutable.
+
+```bash
+export ROUND_START_CHARGED=16.6173136333966
+export POSE_MATRIX="$PROJECT_ROOT/remote_tasks/pose_sensitivity_v1/matrix_receipt.json"
+export POSE_PROBE="$PROJECT_ROOT/work/pose_sensitivity_v1/pose_effect_probe.json"
+
+"$GSPLAT_PY" scripts/build_pose_sensitivity.py \
+  --root "$PROJECT_ROOT" --revision v1 \
+  --gpu-uuids "$GPU0_UUID" "$GPU1_UUID" "$GPU2_UUID" "$GPU3_UUID" \
+  --round-start-charged "$ROUND_START_CHARGED" \
+  --round-cap-gpu-hours 5 --max-gpu-hours 0.6 --timeout-s 2100
+
+CUDA_VISIBLE_DEVICES="" "$GSPLAT_PY" scripts/probe_pose_perturbation.py \
+  --root "$PROJECT_ROOT" --matrix "$POSE_MATRIX" --out "$POSE_PROBE"
+
+for TASK in "$PROJECT_ROOT"/remote_tasks/pose_sensitivity_v1/*.task.json; do
+  "$GSPLAT_PY" -m bgs.queue add --state "$QUEUE_STATE" --task "$TASK"
+done
+"$GSPLAT_PY" -m bgs.queue run \
+  --state "$QUEUE_STATE" --poll-s 5 --max-runtime-s 5000
+
+"$GSPLAT_PY" scripts/collect_pose_sensitivity.py \
+  --root "$PROJECT_ROOT" --matrix "$POSE_MATRIX" --probe "$POSE_PROBE" \
+  --out-dir "$PROJECT_ROOT/reports/pose_sensitivity_v1"
+```
+
+The builder first verifies that the queue is idle and that eight task reservations fit both the 24 GPUh ledger and the separately authorized 5 GPUh round cap. The CPU probe instantiates the pinned gsplat `Parser`/`Dataset`, checks all 24 actual training samples, shared noise directions, exact displacement/rotation, orthogonality, anchor, RGB and intrinsics before any task is added. The exercised matrix completed 8/8 tasks once for 3.987086 GPUh. The report is [pose sensitivity v1](../reports/pose_sensitivity_v1/analysis.md).
+
+## 6. Evaluation and performance
 
 Every successful `bgs run` writes `summary.json`, `training/metrics.json`, per-view comparison canvases, milestone metrics, `model.ply`, checkpoint/progress receipts and `report.html`. Validate that the metric image names exactly equal the manifest hold-out names.
 
@@ -120,7 +151,7 @@ The benchmark is render-only: device-resident inputs, CUDA synchronization, ever
 
 For a final partition, first freeze scene IDs, run IDs, code/config hashes and evaluation rules with `scripts/freeze_final_protocol.py`. Build only the declared matrix with `scripts/build_final_matrix.py`; `scripts/collect_final_results.py` refuses incomplete matrices and retains failed rows. Never use final-scene scores to change parameters or select endpoints.
 
-## 6. Local-only viewer
+## 7. Local-only viewer
 
 ```bash
 "$GSPLAT_PY" -m bgs view --config "$OUTPUT_ROOT/scene_dev_v24_colmap_s42_7k_v1.json"
@@ -128,7 +159,16 @@ For a final partition, first freeze scene IDs, run IDs, code/config hashes and e
 
 The viewer binds to `127.0.0.1`. If the GPU machine is remote, create an SSH local port forward from a second terminal, inspect a calibrated training preset and a genuine held-out camera preset, orbit the model, then stop both viewer and tunnel explicitly. HTTP 200 alone is not an interaction check.
 
-## 7. Clean-source validation boundary
+For the delivered private room demo, the exercised checkpoint identity is the zero-perturbation post-BA run:
+
+```bash
+"$GSPLAT_PY" -m bgs view \
+  --config "$PROJECT_ROOT/configs/ba_operation_ablation_floor_v1/m360_room_dev_v24_vggt_ba_post_s42_7k_floor_v1.json"
+```
+
+Its private static held-out report is under the matching run's `report.html`. Pose-sensitivity fixed panels are listed in `reports/pose_sensitivity_v1/results.json`; benchmark RGB and derived panels remain outside Git.
+
+## 8. Clean-source validation boundary
 
 A clean source directory can reuse read-only dependency and dataset caches by pointing configs to their absolute paths; no RGB, weights or checkpoint is copied into the repository. The exercised sequence is:
 

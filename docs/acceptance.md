@@ -17,6 +17,7 @@ These gates separate a working engineering system from complete experimental evi
 - Development covers object-centric bonsai, indoor room and outdoor garden with immutable nested 6/12/24 inputs, 24–39 held-out images, all 18 COLMAP/feed-forward identities and three official BA-branch system comparisons. Thirteen initialization failures remain in the denominator.
 - The final protocol and six run IDs were frozen before scores. Category-matched counter, kitchen and bicycle use 24 fixed views and 25–35 held-out images. The official BA branch completed 3/3; COLMAP registered only 20/24, 21/24 and 4/24 and failed 0/3 without retries.
 - Reports contain 1k/3k/7k quality, registration, alignment, stage/end-to-end cost, memory, PLY hashes and complete failure rows. Formal performance spans every held-out camera for eight development checkpoints; an independent garden repeat differed by 0.096% in mean latency.
+- A preregistered pose-sensitivity matrix reused the immutable post-BA snapshots on bonsai/room and changed training poses only. All eight new 7k arms succeeded once; actual Parser/Dataset probes verified the perturbation, anchor, exact levels and unchanged RGB/intrinsics before submission.
 - A real browser/WebGL viewer interaction and a separate 39.97-second, three-scene held-out comparison video were inspected. RGB, video and PLYs remain private because redistribution terms are unresolved.
 
 This is one seed per main arm and no geometry ground truth. It supports a portfolio-grade engineering result and scoped reliability conclusion, not strong statistical generalization.
@@ -32,6 +33,6 @@ The validated contribution is the qualified upstream branch integration and depl
 - Engineering delivery: complete for the pinned single-node workflow, finite queue, true held-out evaluation, PLY export, measured renderer and private localhost viewer.
 - Upstream initialization reliability integration: verified for the complete official `use_ba` branch, with full-coverage success and registration ratios reported separately.
 - Isolated BA operation contribution: valid paired image-quality/model/render endpoints now exist on same-reconstruction bonsai/room controls after a shared conventional initialization guard. The result estimates the joint BA call and cannot divide camera from point optimization.
-- Pose-perturbation specialization: not completed in this correction round.
+- Pose-perturbation specialization: completed at a bounded development-only scope. Rotation 0.5°/1.0° reduced PSNR by 0.312/0.910 dB on bonsai and 2.034/3.198 dB on room; translation 0.5%/1.0% of camera radius reduced it by 0.081/0.207 and 0.278/1.372 dB. SSIM/LPIPS moved consistently worse. This is controlled error added to estimated poses for one training seed/noise draw, not known absolute error, geometry accuracy or general robustness.
 - Independently new algorithmic robustness mechanism: not completed; the numerical guard is an engineering fix using a conventional positive lower bound, so no algorithm-gain claim is accepted.
 - Shape-changing resume: diagnosed but not qualified; formal results continue to use uninterrupted runs.
