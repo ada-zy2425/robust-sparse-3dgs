@@ -26,11 +26,15 @@ The controlled 24-view development replication was more informative. Official BA
 
 The full development matrix completed 5/18 predeclared no-BA/COLMAP runs. VGGT no-BA succeeded on bonsai-24 and room-6/12/24, while it failed all garden view counts and bonsai-6/12 because too few points survived. Point count and initializer label alone therefore do not predict end-to-end success.
 
+The untouched final scenes confirmed the reliability direction. COLMAP produced partial models for counter (20/24), kitchen (21/24) and bicycle (4/24), so all three failed the frozen full-coverage gate. Official VGGT BA reached 24/24 and completed training on all three. No retry was used because each COLMAP failure arose from the fixed image overlap/matching result rather than a transient runtime error.
+
+This confirmation does not imply a final-set image-quality victory: failed COLMAP arms have no valid held-out score, and averaging only successful methods would change the denominator. The bicycle BA result also retained conspicuous foreground grass blur/floater artifacts and had the weakest final metrics despite complete initialization. Reliability and reconstruction fidelity remain separate axes.
+
 Three dependency failures are preserved rather than rewritten: v1 lacked the VGGSfM tracker, v2 lacked offline DINOv2 source, and v3's first attempt lacked ALIKED. After exact cache qualification, unchanged v3 used its sole reasoned retry and completed. The successful retry also exposed and cached SuperPoint. BA is an upstream established technique; the project contribution here is controlled diagnosis, offline qualification and evidence accounting.
 
 ## Limits
 
-- Development evidence covers three scenes and one seed per arm; it diagnoses repeatable behavior but is not a strong statistical generalization claim.
+- Evidence covers three development and three final scenes with one seed per main arm; it diagnoses repeatable behavior but is not a strong statistical generalization claim.
 - No ground-truth geometry is available, so PSNR/SSIM/LPIPS are image-space metrics only.
 - Mip-NeRF 360/South Building redistribution terms for derived presentation assets have not been resolved here; images, rendered panels, videos and PLYs remain private.
 - Possible overlap between VGGT pretraining and benchmark scenes is unknown.

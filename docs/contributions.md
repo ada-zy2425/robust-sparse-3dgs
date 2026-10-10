@@ -18,4 +18,6 @@ Implemented in this repository:
 - A bounded read-only multi-camera latency benchmark with per-camera and aggregate distribution reporting.
 - A frozen-final protocol guard that rejects final-scene run IDs not declared before scoring.
 
-The first measured engineering improvement is an early-stopping quality/cost control: it reduced optimization time and artifact size while improving PSNR/SSIM, with a disclosed LPIPS regression. This is schedule selection backed by one development scene, not a novel algorithm or cross-scene claim. No custom CUDA kernel or SOTA claim is made.
+The main reliability result is a controlled diagnosis: a frozen three-scene matrix exposed initializer-specific failures, and changing one factor to official upstream VGGT bundle adjustment restored 24-view initialization across all development scenes. A separately frozen three-scene final matrix then completed 3/3 official-BA arms while all three paired COLMAP arms failed full coverage. Quality and performance remained scene dependent, so this is evidence for a deployment policy and upstream integration—not a new BA algorithm.
+
+The measured engineering tradeoff is an early-stopping control: it reduced optimization time and artifact size while improving PSNR/SSIM, with a disclosed LPIPS regression. It is schedule selection backed by one scene, not a universal optimization claim. No custom CUDA kernel or SOTA claim is made.

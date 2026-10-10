@@ -12,4 +12,4 @@ This repository does not vendor the following projects or model weights. Exact s
 - **VGGSfM v2 tracker checkpoint** — CC-BY-NC-4.0 as declared by the upstream model repository; used only for the official VGGT bundle-adjustment diagnostic and not included here.
 - **DINOv2 code and ViT-B/14-register checkpoint** — Apache-2.0 code with upstream model terms; used for the VGGT BA query-frame ranking path and not included here.
 
-Dataset rights are independent of code/model rights. South Building assets and derived visual material remain private until redistribution permission is confirmed.
+Dataset rights are independent of code/model rights. The official Mip-NeRF 360 archive and COLMAP South Building sample were used for private research evaluation. Their RGB, derived comparison panels/video and reconstructed PLYs remain outside this repository until redistribution permission for those presentation artifacts is confirmed. Possible VGGT pretraining overlap with the benchmark scenes is unknown and is disclosed in the reports.

@@ -17,6 +17,8 @@ The early single-camera FPS number is integration evidence only. The formal deve
 
 Gaussian count is a practical latency and memory driver, but BA changes both cameras and the optimized model: it made room smaller/faster and bonsai and garden larger/slower. This is measured system behavior, not a custom CUDA-kernel claim.
 
+The garden BA checkpoint was independently repeated after its originally assigned A800 became idle. The two 720-sample means were 3.14795 and 3.15096 ms (0.096% relative difference), with identical 1,589,956,096-byte peak allocation. The table conservatively reports the slightly slower second receipt; both immutable receipts are retained.
+
 The earlier South Building 3k control remains a separate quality/cost example. It used 220,795 instead of 641,484 Gaussians, reduced optimization time from 302.4 to 118.7 seconds and PLY size from 151.4 to 52.1 MB. Its mean render latency fell from 2.607 to 2.067 ms and peak memory from 707.4 to 267.1 MB, but LPIPS worsened from 0.3516 to 0.4633. It is therefore a selectable schedule tradeoff rather than a universal optimization win.
 
 Machine-readable distributions and hashes are under `reports/performance/`. Viewer interaction has been browser-validated, but no browser end-to-end latency claim is made.

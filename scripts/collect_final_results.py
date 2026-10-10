@@ -37,6 +37,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--state", required=True)
     parser.add_argument("--protocol", required=True)
+    parser.add_argument("--registry", required=True)
     parser.add_argument("--json-out", required=True)
     parser.add_argument("--csv-out", required=True)
     args = parser.parse_args()
@@ -44,9 +45,15 @@ def main() -> None:
     state = read_json(Path(args.state).resolve())
     protocol_path = Path(args.protocol).resolve()
     protocol = read_json(protocol_path)
+    registry_path = Path(args.registry).resolve()
+    registry = read_json(registry_path)
     expected = list(protocol.get("run_ids", []))
     if protocol.get("status") != "FROZEN_BEFORE_SCORING" or len(expected) < 6:
         raise WorkflowError("Invalid frozen final protocol")
+    registry_scenes = {item["scene_id"]: item for item in registry.get("final", [])}
+    if (registry.get("status") != "FROZEN_FINAL"
+            or set(registry_scenes) != set(protocol.get("scene_ids", []))):
+        raise WorkflowError("Final registry does not match the frozen protocol")
     tasks = state.get("tasks", {})
     missing = sorted(set(expected) - set(tasks))
     if missing:
@@ -76,7 +83,7 @@ def main() -> None:
         row = {
             "run_id": run_id,
             "scene": manifest["scene_id"],
-            "category": manifest.get("category"),
+            "category": registry_scenes[manifest["scene_id"]]["category"],
             "initializer": "vggt_official_ba" if config.get("vggt_ba") else config["initializer"],
             "train_views": len(manifest["train"]),
             "holdout_views": len(manifest["holdout"]),
@@ -114,6 +121,7 @@ def main() -> None:
     result = {
         "schema": 1,
         "protocol_sha256": file_hash(protocol_path),
+        "registry_sha256": file_hash(registry_path),
         "budget_gpu_hours": state["budget_gpu_hours"],
         "charged_gpu_hours_at_collection": state["charged_gpu_hours"],
         "rows": rows,
@@ -125,7 +133,7 @@ def main() -> None:
         output.parent.mkdir(parents=True, exist_ok=True)
     atomic_json(json_out, result)
     with csv_out.open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     print(json.dumps({"json": str(json_out), "csv": str(csv_out), "rows": len(rows)}, indent=2))

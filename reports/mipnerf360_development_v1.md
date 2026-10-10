@@ -67,6 +67,8 @@ The benchmark visits every fixed held-out camera, warms up five times per camera
 
 BA's performance consequence is scene dependent: bonsai quality improved with a larger, slower model; room quality improved with a smaller, faster model. The cross-check reinforces Gaussian count as a practical latency/memory driver, but it is not a custom CUDA or kernel contribution.
 
+The garden BA benchmark also completed on its originally assigned A800 after external contention cleared. Its 720-sample mean was 3.14795 ms versus 3.15096 ms for the independent replacement task, a 0.096% relative difference; both receipts report the same peak allocation. The table uses the slightly slower replacement result and both receipts are retained.
+
 ## Interpretation and limits
 
 - The 6/12/24 matrix establishes failure rates and one-view-count curve on development data; it does not create a strong statistical generalization claim.

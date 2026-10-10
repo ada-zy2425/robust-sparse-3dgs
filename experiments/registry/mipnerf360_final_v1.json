@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "status": "FROZEN_FINAL",
+  "frozen_at": "2026-10-10T11:59:40.539583+00:00",
+  "protocol": "mipnerf360_final_protocol_v1.json",
+  "protocol_sha256": "face3d6a803c89a27539cf3c3d8a567494f22c865b5c813bf13855b7e7961d58",
+  "source": {
+    "url": "https://storage.googleapis.com/gresearch/refraw360/360_v2.zip",
+    "archive_bytes": 12535427936,
+    "archive_md5": "cef2ef3da2a7a65244836d2f6da21d45",
+    "archive_sha256": "77332bf4eba3b8ca0c7f70130849b1e394efdd60d8f20efa6f217081d08a8b2a",
+    "license_note": "Dataset redistribution terms not established; RGB remains private and is not committed",
+    "rgb_distribution": "private_only"
+  },
+  "selection": "category-matched unseen scenes frozen before any final score; final scores cannot change configuration",
+  "final": [
+    {
+      "scene_id": "m360_counter",
+      "category": "object-centric",
+      "registered_images": 240,
+      "reference_sha256": "4d2f0133a1ecb15030a446f82f63a10f17a8d60bc058e5f5e73dfe16966a1404",
+      "manifest_sha256": "5a1be467ca71f9b404e4be2c1469787884833862f6f369a8102602e9970416e9",
+      "train_count": 24,
+      "holdout_count": 30
+    },
+    {
+      "scene_id": "m360_kitchen",
+      "category": "indoor",
+      "registered_images": 279,
+      "reference_sha256": "bced6d12d05323fb245b0631c2ef28593856c3524fbfb313420c657184d4e519",
+      "manifest_sha256": "7c24db95737080b394047783a278c49943f0448cf310d2a89370eba7de7cae07",
+      "train_count": 24,
+      "holdout_count": 35
+    },
+    {
+      "scene_id": "m360_bicycle",
+      "category": "outdoor",
+      "registered_images": 194,
+      "reference_sha256": "c7c9c3d35a27d42b63388e3d5aeec220e9768bec49abf01062fc1e18ddff4c07",
+      "manifest_sha256": "82a1702bae1c20bc2b47928a1d82bc30d9a6b511b3efcc07e012a8359514c26f",
+      "train_count": 24,
+      "holdout_count": 25
+    }
+  ],
+  "source_remote_receipt_sha256": "ec6747a8becd2e6680f2eee9f684f25603d65ff4551b9b7ce9add66af4af0a1e"
+}
