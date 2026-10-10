@@ -85,7 +85,7 @@ def _semantic_trace_record(record):
 def _trace_local_names(label):
     names=['image_ids']
     if label!='sample':names+=['renders','alphas']
-    if label in ('backward','post_update','pre_strategy','post_strategy','after_step'):names+=['loss']
+    if label in ('pre_backward','backward','post_update','pre_strategy','post_strategy','after_step'):names+=['loss']
     return names
 
 

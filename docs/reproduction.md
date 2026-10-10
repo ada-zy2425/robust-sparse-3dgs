@@ -57,13 +57,14 @@ Choose an actually idle physical GPU from the environment check. The following i
   --run-id scene_dev_v24_colmap_s42_7k_v1 \
   --initializer colmap --gpu 0 --gpu-hours 1.5 \
   --steps 7000 --max-edge 1024 --timeout 5000 \
+  --splat-numerics-policy dtype_scene_scale_floor_v1 \
   --gsplat-root "$PROJECT_ROOT/third_party/gsplat" \
   --out "$OUTPUT_ROOT/scene_dev_v24_colmap_s42_7k_v1.json"
 
 "$GSPLAT_PY" -m bgs run --config "$OUTPUT_ROOT/scene_dev_v24_colmap_s42_7k_v1.json"
 ```
 
-The command exits nonzero on partial registration, too few points, timeout, non-finite tensors, identity mismatch or budget exhaustion. Do not remove a partial registration from the denominator: report both the full-coverage success rate and its registered/requested ratio.
+The command exits nonzero on partial registration, too few points, timeout, non-finite tensors, identity mismatch or budget exhaustion. `training/initialization_numerics.json` records the selected policy, scale floor, changed-point count and immediate post-initialization finite check. The floor is dtype- and scene-scale-relative; it is not `nan_to_num`, and a normal point cloud is unchanged. Do not remove a partial registration from the denominator: report both the full-coverage success rate and its registered/requested ratio.
 
 ## 4. Bounded batch execution
 
@@ -93,11 +94,16 @@ export GPU1_UUID=GPU-REPLACE_FROM_NVIDIA_SMI
 export GPU2_UUID=GPU-REPLACE_FROM_NVIDIA_SMI
 export GPU3_UUID=GPU-REPLACE_FROM_NVIDIA_SMI
 "$GSPLAT_PY" scripts/build_ba_operation_ablation.py \
-  --root "$PROJECT_ROOT" --revision v1 --seed 42 \
+  --root "$PROJECT_ROOT" --revision floor_v1 --seed 42 \
+  --reuse-pair-revision v1 --pair-seed 42 \
+  --splat-numerics-policy dtype_scene_scale_floor_v1 \
+  --max-gpu-hours 1.25 \
   --gpu-uuids "$GPU0_UUID" "$GPU1_UUID" "$GPU2_UUID" "$GPU3_UUID"
 ```
 
-It first persists one official BA-branch reconstruction before `pycolmap.bundle_adjustment`, reloads isolated pre/post copies, applies BA only to the post copy, and then uses identical downstream gsplat settings. The original feed-forward/no-BA branch is a different initialization pipeline and is reported separately.
+This exercised command reuses the already immutable seed-42 pre/post reconstruction pair and applies the same numerical policy to both arms. To create a new pair, omit `--reuse-pair-revision` and give a new revision; the builder first persists one official BA-branch reconstruction before `pycolmap.bundle_adjustment`, reloads isolated pre/post copies, applies BA only to the post copy, and uses identical downstream gsplat settings. The original feed-forward/no-BA branch is a different initialization pipeline and is reported separately.
+
+The exercised training-randomness repeat used a new immutable identity and explicit remaining-budget bounds: `--revision floor_v3 --seed 43 --reuse-pair-revision v1 --pair-seed 42 --splat-numerics-policy dtype_scene_scale_floor_v1 --max-gpu-hours 0.7 --timeout-s 2400`. The unused `floor_v2` materialization was rejected before queue addition because its 4200-second timeout exceeded that reservation; it consumed zero GPU and was not overwritten.
 
 ## 5. Evaluation and performance
 

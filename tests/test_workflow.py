@@ -119,6 +119,9 @@ class QueueTests(unittest.TestCase):
         task=self.task('probe');task['kind']='initialization_diagnostic'
         task['argv']=[sys.executable,str(self.root/'vggt_confidence_probe.py'),'--out',str(self.root/'x')]
         self.assertEqual(add_task(self.state(),task)['kind'],'initialization_diagnostic')
+        task=self.task('splat_probe');task['kind']='initialization_diagnostic'
+        task['argv']=[sys.executable,str(self.root/'diagnose_splat_initialization.py'),'--out',str(self.root/'y')]
+        self.assertEqual(add_task(self.state(),task)['kind'],'initialization_diagnostic')
         bad=self.task('bad_probe');bad['kind']='initialization_diagnostic'
         with self.assertRaises(WorkflowError):add_task(self.state(),bad)
     def test_explicit_bgs_retry_reaches_inner_bounded_runner(self):

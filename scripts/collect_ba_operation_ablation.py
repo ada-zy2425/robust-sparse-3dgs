@@ -34,6 +34,8 @@ def main():
             summary=read_json(run/'summary.json') if (run/'summary.json').is_file() else None
             metrics=read_json(run/'training'/'metrics.json') if (run/'training'/'metrics.json').is_file() else None
             init=read_json(run/'input'/'init_receipt.json') if (run/'input'/'init_receipt.json').is_file() else None
+            numerics_path=run/'training'/'initialization_numerics.json'
+            numerics=read_json(numerics_path) if numerics_path.is_file() else None
             benchmark=None;benchmark_status='NOT_REQUESTED'
             if not args.skip_benchmarks:
                 benchmark_id=f'bench_{run_id}_mc_v1';benchmark_task=queue['tasks'].get(benchmark_id)
@@ -52,13 +54,18 @@ def main():
                 'upstream_digest':digest(experiment['upstream']),
                 'training_contract_digest':digest({key:config.get(key) for key in
                     ('steps','max_edge','seed','noise_seed','checkpoint_every','max_gaussians',
-                     'rotation_degrees','translation_fraction','pose_opt','cache_images')}),
+                     'rotation_degrees','translation_fraction','pose_opt','cache_images',
+                     'splat_numerics_policy')}),
                 'failure_categories_recorded':'|'.join(str(x.get('category','')) for x in attempts if x.get('category')),
                 'failure_categories_interpreted':'|'.join(_category(x['log'],x.get('status',task['status']))
                                                           for x in attempts if x.get('status')!='SUCCEEDED'),
                 'failure_log_sha256':'|'.join(file_hash(x['log']) for x in attempts if Path(x.get('log','')).is_file()),
                 'registered_views':len(init['registered_names']) if init else None,
                 'initial_points':init['num_points'] if init else None,
+                'splat_numerics_policy':config.get('splat_numerics_policy','upstream_v1'),
+                'clamped_scale_points':numerics.get('clamped_point_count') if numerics else None,
+                'positive_scale_floor':numerics.get('positive_scale_floor') if numerics else None,
+                'first_invalid_after_policy':numerics.get('first_invalid_after_policy') if numerics else None,
                 'psnr':metrics['mean']['psnr'] if valid else None,
                 'ssim':metrics['mean']['ssim'] if valid else None,
                 'lpips':metrics['mean']['lpips'] if valid else None,
@@ -76,7 +83,8 @@ def main():
                 'queue_gpu_hours':sum(x.get('gpu_hours',0) for x in attempts),
                 'model_sha256':file_hash(run/'training'/'model.ply') if valid else None,
                 'metrics_sha256':file_hash(run/'training'/'metrics.json') if valid else None,
-                'init_receipt_sha256':file_hash(run/'input'/'init_receipt.json') if init else None})
+                'init_receipt_sha256':file_hash(run/'input'/'init_receipt.json') if init else None,
+                'initialization_numerics_sha256':file_hash(numerics_path) if numerics else None})
     by={(x['scene'],x['arm']):x for x in rows};deltas={}
     for scene in ('bonsai','room'):
         a,b=by[scene,'pre_ba'],by[scene,'post_ba']

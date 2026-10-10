@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "revision": "floor_v3",
+  "seed": 43,
+  "seed_scope": "Training randomness only; immutable seed-42 initialization pair reused.",
+  "splat_numerics_policy": "dtype_scene_scale_floor_v1",
+  "scope": "Joint camera-and-point pycolmap.bundle_adjustment operation on two development snapshots.",
+  "limit": "Not independent initialization randomness; does not separate camera from point optimization.",
+  "rows": [
+    {"run_id": "m360_bonsai_dev_v24_vggt_ba_pre_s43_7k_floor_v3", "scene": "bonsai", "arm": "pre_ba", "status": "SUCCEEDED", "attempts": 1, "psnr": 15.819834580292573, "ssim": 0.45101552154566793, "lpips": 0.48966258522626516, "num_gaussians": 744652, "model_bytes": 175739349, "queue_gpu_hours": 0.5132993933392895},
+    {"run_id": "m360_bonsai_dev_v24_vggt_ba_post_s43_7k_floor_v3", "scene": "bonsai", "arm": "post_ba", "status": "SUCCEEDED", "attempts": 1, "psnr": 17.410723041843724, "ssim": 0.5030304153223295, "lpips": 0.34848808034046275, "num_gaussians": 730535, "model_bytes": 172407737, "queue_gpu_hours": 0.5134219063601146},
+    {"run_id": "m360_room_dev_v24_vggt_ba_pre_s43_7k_floor_v3", "scene": "room", "arm": "pre_ba", "status": "SUCCEEDED", "attempts": 1, "psnr": 17.688901730072804, "ssim": 0.5940650793222281, "lpips": 0.3552501109930185, "num_gaussians": 674071, "model_bytes": 159082233, "queue_gpu_hours": 0.49445311495361643},
+    {"run_id": "m360_room_dev_v24_vggt_ba_post_s43_7k_floor_v3", "scene": "room", "arm": "post_ba", "status": "SUCCEEDED", "attempts": 1, "psnr": 19.69307266137539, "ssim": 0.6722562274871728, "lpips": 0.26709998761996245, "num_gaussians": 547504, "model_bytes": 129212421, "queue_gpu_hours": 0.4872602628456015}
+  ],
+  "post_minus_pre": {
+    "bonsai": {"psnr": 1.5908884615511507, "ssim": 0.052014893776661575, "lpips": -0.1411745048858024, "num_gaussians": -14117, "model_bytes": -3331612},
+    "room": {"psnr": 2.0041709313025855, "ssim": 0.07819114816494477, "lpips": -0.08815012337305606, "num_gaussians": -126567, "model_bytes": -29869812}
+  }
+}

@@ -71,8 +71,10 @@ def _normalized_task(spec):
         raise WorkflowError("resume_qualification must invoke qualify_resume.py")
     if spec["kind"]=="render_benchmark" and not any(x.endswith("benchmark_render.py") for x in argv):
         raise WorkflowError("render_benchmark must invoke benchmark_render.py")
-    if spec["kind"]=="initialization_diagnostic" and not any(x.endswith("vggt_confidence_probe.py") for x in argv):
-        raise WorkflowError("initialization_diagnostic must invoke vggt_confidence_probe.py")
+    if spec["kind"]=="initialization_diagnostic" and not any(
+            x.endswith(("vggt_confidence_probe.py","diagnose_splat_initialization.py",
+                        "run_splat_stability_probe.py")) for x in argv):
+        raise WorkflowError("initialization_diagnostic must invoke an approved initialization probe")
     cwd=str(Path(spec["cwd"]).resolve());config=str(Path(spec["config_path"]).resolve())
     if not Path(cwd).is_absolute() or not Path(config).is_absolute(): raise WorkflowError("cwd/config_path must be absolute")
     if not isinstance(spec["dependencies"],list) or not all(isinstance(x,str) for x in spec["dependencies"]):

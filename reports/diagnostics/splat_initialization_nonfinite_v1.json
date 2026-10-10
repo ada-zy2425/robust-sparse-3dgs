@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "scope": "development-only read-only audit and 801-step repair qualification on immutable seed-42 BA-pair snapshots",
+  "pinned_trainer_sha256": "56496f684cfc1ea737064ff228ef2acdb99c913041f99aa6fa23155487245764",
+  "historical_observation_correction": "The old checkpoint-period gate at step 100 was the first check, not the first abnormal operation. Both pre-BA snapshots were already non-finite during splat initialization, before forward, loss, backward, optimizer, or strategy work.",
+  "root_cause": {
+    "operation": "log(sqrt(mean(square(knn(points, 4)[:, 1:]))) * init_scale)",
+    "finding": "Exact duplicate clusters supplied three zero non-self neighbor distances for 4 bonsai points and 8 room points. Their dist2_avg was zero, so log(0) produced negative-infinite scale parameters and exp(scales) was zero.",
+    "excluded_as_first_causes": [
+      "forward rendering",
+      "loss evaluation",
+      "backward gradients",
+      "optimizer update",
+      "strategy densification or pruning"
+    ]
+  },
+  "initial_state_controls": {
+    "raw_parser_and_trainer_points_all_finite": true,
+    "means_quaternions_opacities_and_spherical_harmonics_all_finite": true,
+    "only_initial_nonfinite_field": "scales",
+    "all_optimizer_parameter_bindings_current": true,
+    "initial_optimizer_state_entries": 0,
+    "optimizer_learning_rates_and_parameter_ranges_recorded_in_raw_receipts": true
+  },
+  "snapshot_audits": [
+    {
+      "scene": "bonsai",
+      "arm": "pre_ba",
+      "points": 22192,
+      "unique_points": 21447,
+      "duplicate_rows": 745,
+      "duplicate_clusters": 733,
+      "maximum_cluster_size": 4,
+      "zero_nonself_distances_by_rank": [1478, 34, 4],
+      "zero_dist2_avg_points": 4,
+      "negative_infinite_scale_components": 12,
+      "zero_exp_scale_components": 12,
+      "first_point_index": 3636,
+      "first_point3D_id": 3637,
+      "scene_scale": 1.3726590629770834,
+      "original_parser_float32_duplicate_counts_equal": true,
+      "receipt_sha256": "7f04fd76a6aa4482bb8a7c39ce28bb95fa9aca2a1c51c676686c63a98391fba6"
+    },
+    {
+      "scene": "room",
+      "arm": "pre_ba",
+      "points": 36226,
+      "unique_points": 34709,
+      "duplicate_rows": 1517,
+      "duplicate_clusters": 1469,
+      "maximum_cluster_size": 4,
+      "zero_nonself_distances_by_rank": [2986, 140, 8],
+      "zero_dist2_avg_points": 8,
+      "negative_infinite_scale_components": 24,
+      "zero_exp_scale_components": 24,
+      "first_point_index": 6311,
+      "first_point3D_id": 6312,
+      "scene_scale": 0.8612708764769689,
+      "original_parser_float32_duplicate_counts_equal": true,
+      "receipt_sha256": "87b9c38ace1af10387128a5f7f915184cecbb3f0fbb8f22e9eec73e187f28b0d"
+    },
+    {
+      "scene": "bonsai",
+      "arm": "post_ba",
+      "points": 22192,
+      "unique_points": 22192,
+      "zero_dist2_avg_points": 0,
+      "negative_infinite_scale_components": 0,
+      "receipt_sha256": "563cf88a0ddb610d213dc51d7a6cfd669e2dd65e1e178cf958d4c16ebe2fbc3f"
+    },
+    {
+      "scene": "room",
+      "arm": "post_ba",
+      "points": 36226,
+      "unique_points": 36226,
+      "zero_dist2_avg_points": 0,
+      "negative_infinite_scale_components": 0,
+      "receipt_sha256": "c200925d96577b1565f8020a0df029e08772c30d14bbac09a747c5d1cec084fd"
+    }
+  ],
+  "repair_candidates": {
+    "exact_deduplicate_mean_color_v1": {
+      "status": "PASSED_801_STEPS_BOTH_SCENES",
+      "bonsai": {"input_points": 22192, "output_points": 21447, "removed_points": 745, "color_conflict_clusters": 551, "max_color_channel_change": 88.0},
+      "room": {"input_points": 36226, "output_points": 34709, "removed_points": 1517, "color_conflict_clusters": 1200, "max_color_channel_change": 78.5},
+      "coverage": "axis-aligned extent preserved, but point count and duplicate-cluster colors changed"
+    },
+    "dtype_scene_scale_floor_v1": {
+      "status": "SELECTED",
+      "formula": "eps(dtype) * max(max_abs_coordinate, scene_scale) * init_scale",
+      "bonsai_pre": {"floor": 4.1067698930419283e-07, "clamped_points": 4, "minimum_unclamped_positive_scale": 0.0013520113425329328},
+      "room_pre": {"floor": 1.7880013558624341e-07, "clamped_points": 8, "minimum_unclamped_positive_scale": 0.0002870383905246854},
+      "bonsai_post_clamped_points": 0,
+      "room_post_clamped_points": 0,
+      "point_count_changed": false,
+      "colors_changed": false,
+      "spatial_coverage_changed": false,
+      "selection_rule": "Choose the passing conventional guard that changes fewer points, colors, and coverage properties."
+    }
+  },
+  "short_qualification": {
+    "configured_steps": 801,
+    "checked_each_step": ["sample", "forward", "loss before backward", "backward gradients", "optimizer and scheduler update", "strategy before and after update", "after step"],
+    "all_four_selected_policy_arms_passed": true,
+    "all_four_first_nonfinite": null,
+    "structural_event_steps": [600, 700, 800],
+    "runs": [
+      {"scene": "bonsai", "arm": "pre_ba", "initial_gaussians": 22192, "final_gaussians": 35293, "elapsed_seconds": 223.36471953988075, "receipt_sha256": "ad8ecdd51dc839d37d8b0dc7f4ed1a2bb6379723ed9765d3439781ebec2913d3a"},
+      {"scene": "bonsai", "arm": "post_ba", "initial_gaussians": 22192, "final_gaussians": 40543, "elapsed_seconds": 215.5311459042132, "receipt_sha256": "6ff9e984be4207a659357340466c24ee36bec17c24628b8e016d0204e9523369"},
+      {"scene": "room", "arm": "pre_ba", "initial_gaussians": 36226, "final_gaussians": 61477, "elapsed_seconds": 214.88763082772493, "receipt_sha256": "806c897f4ad366a73cc3e91ff6ea2c7e95e8f71de259fdb0e2917d817bef87a1"},
+      {"scene": "room", "arm": "post_ba", "initial_gaussians": 36226, "final_gaussians": 62786, "elapsed_seconds": 209.05761099234223, "receipt_sha256": "490038f987aee101b50a45e4b1f4c5579fb232f7b3cc687a41e950b447e53486"}
+    ]
+  },
+  "gpu_hours": {
+    "snapshot_audits": 0.00936249161242611,
+    "candidate_repairs": 0.2513027621578011,
+    "post_ba_selected_policy_controls": 0.12227912476234552,
+    "subtotal": 0.3829443785325727
+  },
+  "classification": "Conventional numerical robustness fix in a versioned adapter; not a new reconstruction algorithm.",
+  "deployment_relative_evidence": [
+    "work/splat_initialization_diagnostic_v1",
+    "work/splat_stability_candidates_v1",
+    "work/splat_stability_post_v1",
+    "work/formal_stage_v1/queue.json"
+  ],
+  "historical_runs_mutated": false
+}

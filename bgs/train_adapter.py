@@ -18,6 +18,8 @@ import time
 import types
 
 from .core import WorkflowError, atomic_json, read_json, file_hash, digest, validate_metrics
+from .splat_numerics import (DEDUP_POLICY,FLOOR_POLICY,POLICIES,UPSTREAM_POLICY,
+                            first_nonfinite_splat,guarded_log_scales,stable_exact_deduplicate)
 
 
 def patch_train_function(source):
@@ -25,7 +27,7 @@ def patch_train_function(source):
     tree = ast.parse(source)
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Runner")
     fn = next(n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == "train")
-    hits = {"start": 0, "loader": 0, "restore": 0, "loop": 0, "finite": 0,
+    hits = {"start": 0, "loader": 0, "restore": 0, "loop": 0, "finite": 0, "pre_backward":0,
             "stop":0,"sample":0,"forward":0,"scheduler":0,"strategy":0}
     class Patch(ast.NodeTransformer):
         def visit_Assign(self, node):
@@ -64,7 +66,8 @@ def patch_train_function(source):
             call = node.value
             if isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute) and call.func.attr == "backward" and isinstance(call.func.value, ast.Name) and call.func.value.id == "loss":
                 hits["finite"] += 1
-                return ast.parse("if not torch.isfinite(loss).all():\n    raise FloatingPointError('Non-finite training loss')").body + [node]+ast.parse("self._trace_point('backward', step, locals())").body
+                hits["pre_backward"] += 1
+                return ast.parse("self._trace_point('pre_backward', step, locals())\nif not torch.isfinite(loss).all():\n    raise FloatingPointError('Non-finite training loss')").body + [node]+ast.parse("self._trace_point('backward', step, locals())").body
             if isinstance(call,ast.Call) and isinstance(call.func,ast.Attribute) and call.func.attr=="step_post_backward":
                 hits["strategy"]+=1
                 return ast.parse("self._trace_point('pre_strategy', step, locals())").body+[node]+ast.parse("self._trace_point('post_strategy', step, locals())").body
@@ -173,9 +176,24 @@ def make_runner(spec, manifest, training_dir, output, viewer=False, read_only=Fa
     if not hasattr(module,"_bgs_original_seed"):
         module._bgs_original_seed=module.set_random_seed
         module._bgs_original_dataset=module.Dataset
+        module._bgs_original_parser=module.Parser
     original_seed = module._bgs_original_seed
     module.set_random_seed = lambda _unused: original_seed(spec["seed"])
     BaseDataset = module._bgs_original_dataset
+    BaseParser = module._bgs_original_parser
+    policy=spec.get("splat_numerics_policy",UPSTREAM_POLICY)
+    if policy not in POLICIES:raise WorkflowError(f"Unknown splat_numerics_policy: {policy}")
+    if policy==DEDUP_POLICY:
+        class DeduplicatingParser(BaseParser):
+            def __init__(self,*args,**kwargs):
+                super().__init__(*args,**kwargs)
+                points,colors,errors,indices,_,receipt=stable_exact_deduplicate(
+                    self.points,self.points_rgb,self.points_err,self.point_indices)
+                self.points=points;self.points_rgb=colors;self.points_err=errors;self.point_indices=indices
+                self._bgs_splat_numerics=receipt
+        module.Parser=DeduplicatingParser
+    else:
+        module.Parser=BaseParser
     class AllSelectedDataset(BaseDataset):
         def __init__(self, parser, split="train", **kwargs):
             super().__init__(parser,split=split,**kwargs)
@@ -201,6 +219,24 @@ def make_runner(spec, manifest, training_dir, output, viewer=False, read_only=Fa
         from functools import partial
         module.viser.ViserServer=partial(module.viser.ViserServer,host="127.0.0.1")
     runner=module.Runner(0,0,1,cfg)
+    numerics=getattr(runner.parser,"_bgs_splat_numerics",{"policy":policy,"input_points":len(runner.parser.points),
+        "output_points":len(runner.parser.points),"point_count_changed":False,"colors_changed":False,
+        "spatial_coverage_changed":False})
+    if policy==FLOOR_POLICY:
+        points=torch.from_numpy(runner.parser.points).float()
+        distances=module.knn(points,4)
+        guarded,guard_receipt=guarded_log_scales(points,distances,runner.scene_scale,runner.cfg.init_scale)
+        current=runner.splats["scales"].detach().cpu();changed_rows=(current!=guarded).any(-1)
+        if int(changed_rows.sum())!=guard_receipt["clamped_point_count"]:
+            raise WorkflowError("Scale guard changed values outside its declared clamped set")
+        with torch.no_grad():runner.splats["scales"].copy_(guarded.to(runner.device))
+        numerics=guard_receipt
+    first_invalid=first_nonfinite_splat(runner.splats)
+    numerics={**numerics,"first_invalid_after_policy":first_invalid,
+              "adapter_policy_field":"splat_numerics_policy"}
+    if not read_only:atomic_json(Path(output)/"initialization_numerics.json",numerics)
+    if first_invalid is not None and not spec.get("splat_numerics_allow_nonfinite_audit",False):
+        raise FloatingPointError(f"Non-finite initial splat state: {first_invalid}")
     if set(runner.parser.image_names)!=set(manifest["train"]):
         raise WorkflowError("Initialization registration differs from the complete training split")
     if len(runner.parser.points)<4 or not np.isfinite(runner.parser.points).all():

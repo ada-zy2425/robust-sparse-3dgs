@@ -10,8 +10,11 @@ from bgs.core import WorkflowError,atomic_json,file_hash,read_json
 def main():
     p=argparse.ArgumentParser();p.add_argument('--root',required=True);p.add_argument('--revision',default='v1')
     p.add_argument('--seed',type=int,default=42)
+    p.add_argument('--max-gpu-hours',type=float,default=.25);p.add_argument('--timeout-s',type=int,default=900)
     p.add_argument('--gpu-uuids',nargs=4,required=True,metavar=('GPU0','GPU1','GPU2','GPU3'))
     args=p.parse_args();root=Path(args.root).resolve();gpu_uuids=dict(enumerate(args.gpu_uuids))
+    if args.max_gpu_hours<=0 or args.timeout_s<=0 or args.timeout_s/3600>args.max_gpu_hours:
+        raise WorkflowError('Benchmark timeout must be positive and fit its GPU-hour bound')
     if any(not value.startswith('GPU-') for value in gpu_uuids.values()):raise WorkflowError('Every GPU UUID must start with GPU-')
     taskdir=root/'remote_tasks'/f'ba_operation_ablation_{args.revision}_benchmarks'
     outdir=root/'work'/f'ba_operation_ablation_{args.revision}'/'performance'
@@ -27,11 +30,13 @@ def main():
                     '--config',str(config),'--out',str(output),'--warmup','5','--repeats','30','--max-cameras','64'],
                 'cwd':str(root),'env':{'PYTHONPATH':str(root),'TMPDIR':str(root/'tmp'/f'ba_operation_ablation_{args.revision}'/task_id)},
                 'dependencies':[run_id],'config_path':str(config),'config_sha256':file_hash(config),
-                'gpu_index':gpu,'gpu_uuid':gpu_uuids[gpu],'gpu_count':1,'max_gpu_hours':.25,'timeout_s':900,
+                'gpu_index':gpu,'gpu_uuid':gpu_uuids[gpu],'gpu_count':1,
+                'max_gpu_hours':args.max_gpu_hours,'timeout_s':args.timeout_s,
                 'disk_reservation_bytes':2**30,'expected_outputs':[str(output)],'priority':30}
             path=taskdir/f'{task_id}.task.json';atomic_json(path,task);rows.append(str(path))
     atomic_json(taskdir/'matrix_receipt.json',{'schema':1,'revision':args.revision,'seed':args.seed,
-        'protocol':'every fixed held-out camera; 5 warmups and 30 synchronized repeats','tasks':rows})
+        'protocol':'every fixed held-out camera; 5 warmups and 30 synchronized repeats',
+        'per_task_max_gpu_hours':args.max_gpu_hours,'timeout_s':args.timeout_s,'tasks':rows})
     print('\n'.join(rows))
 
 

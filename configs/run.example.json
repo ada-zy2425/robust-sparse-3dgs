@@ -19,6 +19,7 @@
   "translation_fraction": 0.0,
   "pose_opt": false,
   "cache_images": false,
+  "splat_numerics_policy": "dtype_scene_scale_floor_v1",
   "hypothesis": "Fixed-schedule baseline",
   "independent_contribution": "workflow and evaluation integration"
 }

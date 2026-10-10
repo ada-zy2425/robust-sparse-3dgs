@@ -5,6 +5,7 @@ import sys
 
 from .core import WorkflowError, read_json, atomic_json, digest, file_hash, identifier, positive, Engine, validate_metrics
 from .data import validate_manifest,verify_inputs,stage_training,validate_final_run
+from .splat_numerics import POLICIES,UPSTREAM_POLICY
 
 
 def load_spec(path):
@@ -15,6 +16,8 @@ def load_spec(path):
         if key not in spec: raise WorkflowError(f"Missing config field: {key}")
     identifier(spec["run_id"])
     if spec["initializer"] not in ("colmap","vggt"): raise WorkflowError("initializer must be colmap or vggt")
+    if spec.get("splat_numerics_policy",UPSTREAM_POLICY) not in POLICIES:
+        raise WorkflowError("Unknown splat_numerics_policy")
     if not str(spec["gpu"]).isdigit(): raise WorkflowError("gpu must be one physical GPU index")
     for key in ("steps","max_edge","checkpoint_every","max_gaussians"):
         positive(spec[key],key)
@@ -77,7 +80,8 @@ def run(config,retry_failed=False,recover_stale=False):
         for name,expected in init["files"].items():
             if file_hash(Path(init["model"])/name)!=expected: raise WorkflowError("Initialization artifact modified")
         engine.run(spec["run_id"],"train_evaluate",base+["--phase","train"],str(package_root),env,
-                   [training/"complete.json",training/"metrics.json",training/"model.ply",training/"progress.json"],
+                   [training/"complete.json",training/"metrics.json",training/"model.ply",training/"progress.json",
+                    training/"initialization_numerics.json"],
                    spec["timeout_s"],retry_failed=retry_failed,recover_stale=recover_stale,
                    fingerprint={"experiment":fingerprint_hash,"initialization":init})
         metrics=validate_metrics(training/"metrics.json",manifest["holdout"])

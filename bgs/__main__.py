@@ -5,6 +5,7 @@ import os
 import sys
 
 from .core import WorkflowError,atomic_json,read_json
+from .splat_numerics import POLICIES,UPSTREAM_POLICY
 
 
 def diagnostic_steps(total_steps):
@@ -25,6 +26,7 @@ def main():
     q.add_argument("--steps",type=int,default=200); q.add_argument("--max-edge",type=int,default=1024)
     q.add_argument("--timeout",type=int,default=1200); q.add_argument("--out",required=True)
     q.add_argument("--gsplat-root",required=True); q.add_argument("--vggt-root"); q.add_argument("--vggt-python")
+    q.add_argument("--splat-numerics-policy",choices=sorted(POLICIES),default=UPSTREAM_POLICY)
     q=sub.add_parser("run"); q.add_argument("--config",required=True); q.add_argument("--retry-failed",action="store_true"); q.add_argument("--recover-stale",action="store_true")
     q=sub.add_parser("loop"); q.add_argument("--configs",nargs="+",required=True); q.add_argument("--max-experiments",type=int,default=2)
     q=sub.add_parser("worker"); q.add_argument("--config",required=True); q.add_argument("--phase",choices=["initialize","train","viewer"],required=True)
@@ -56,6 +58,7 @@ def main():
                   "checkpoint_every":100,"diagnostic_steps":diagnostic_steps(args.steps),
                   "max_gaussians":2000000,"timeout_s":args.timeout,
                   "rotation_degrees":0.,"translation_fraction":0.,"pose_opt":False,
+                  "splat_numerics_policy":args.splat_numerics_policy,
                   "cache_images":False,"hypothesis":"Compare initialization at fixed inputs and training budget",
                   "independent_contribution":"workflow and evaluation integration; algorithm mechanism pending observations"}
             if args.initializer=="colmap":
