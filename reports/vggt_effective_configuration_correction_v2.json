@@ -1,0 +1,1055 @@
+{
+  "schema": 1,
+  "correction": "effective configuration interpretation only",
+  "historical_artifacts_modified": false,
+  "pinned_demo_sha256": "c1aaebd123ad66ee85d46e6b629f1e02c8e60a897682fc2e9afcde65937818ce",
+  "source_facts": {
+    "official_use_ba_branch": [
+      "VGGSfM tracking",
+      "track/visibility/reprojection filtering",
+      "tracked-point COLMAP construction",
+      "SIMPLE_PINHOLE by default",
+      "pycolmap.bundle_adjustment"
+    ],
+    "official_feedforward_branch": [
+      "depth confidence threshold",
+      "seeded random truncation to at most 100000 points",
+      "direct depth-point COLMAP construction",
+      "PINHOLE",
+      "no bundle adjustment"
+    ],
+    "attribution_limit": "Historical branch-level results do not isolate BA, camera changes, or point changes."
+  },
+  "records": [
+    {
+      "run_id": "m360_bonsai_dev_v24_vggt_ba_post_s42_7k_v1",
+      "historical_config_sha256": "fac2e7866b2a3c10bd3e15c4bcd695914b3d949d6030355273991839ce850b4c",
+      "historical_init_receipt_sha256": "6a77db2dd484ff05d1d98107ac39d6c7f94fa8d6757cb3089a4cd613e124211c",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_bonsai_dev_v24_vggt_ba_pre_s42_7k_v1",
+      "historical_config_sha256": "726a92d620df62b3dcc171929a0e2887d44a387640ecaaaa8b91b9dc354a4199",
+      "historical_init_receipt_sha256": "cbafe561e3787721e0bb33283c98049284af95cb22a85b2b0419e78f5b103042",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_bonsai_dev_v24_vggt_ba_s42_7k_v2",
+      "historical_config_sha256": "c3da360bec305d3e0728094faf4cc0071b55bf07b33fb7f356032d9a491a8788",
+      "historical_init_receipt_sha256": "a73d9f78af40c8e870221aabca46e3ea6a55fbe49e3529a03d094c2d5cc1e41f",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_bonsai_dev_v24_vggt_s42_7k_v3",
+      "historical_config_sha256": "1a6a7e442cb63abe4d20b242bd918a1881d6b908eca6a50ed787f0dcfe9acba9",
+      "historical_init_receipt_sha256": "583a6179f6ce529ed89ba999c94d46a4fd86d2273d3750555e07a7ae3c8a0bfb",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_garden_dev_v24_vggt_ba_s42_7k_v2",
+      "historical_config_sha256": "a3d20d8b32f0c4e15c6b3441839630ba2b0f5e65f216a0c4a9c8628dcb568c90",
+      "historical_init_receipt_sha256": "0e1c8956214d435516bd6574ba906a85e18879aceb3f16ccaf4a3beedaa3ea5a",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v06_vggt_s42_7k_v3",
+      "historical_config_sha256": "7e5fe8455d791d6d0fbe542798b2ee76812cc0eec5c73a3212cfab3425e3c793",
+      "historical_init_receipt_sha256": "c595ea185b5afba3d49bf283f906e324a572aabce1e67f12727fe68d975f5f10",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v12_vggt_s42_7k_v3",
+      "historical_config_sha256": "94624700c2fb9fd4580be79801c4b3ae418ea1d292db03d77beef876213fa093",
+      "historical_init_receipt_sha256": "3b3a83069c1a7a5cd1a479562dbdf0ca3174767bb1e4308a2611f1cb9fd8242f",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v24_vggt_ba_post_s42_7k_v1",
+      "historical_config_sha256": "5708428bfa21fa6edd7caeaa8f4c7403df33d992be846f54101da9f77fe347f6",
+      "historical_init_receipt_sha256": "d4248373fb96ee9464605008675843f31403ea32c293e33f4f4636889cd108a7",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v24_vggt_ba_pre_s42_7k_v1",
+      "historical_config_sha256": "fba410a8c3cc59a87a7bcba76374b024a47351cb2e7e497047f481c91f0e9384",
+      "historical_init_receipt_sha256": "ccfeb0bab54181a12eaeddf1e334739fa8f4b6c00cec251a179d04c753781a7e",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v24_vggt_ba_s42_7k_v2",
+      "historical_config_sha256": "02e23c984025815a4643d384ff0955ea767c3b34db9e17448cce34064f3cde6d",
+      "historical_init_receipt_sha256": "8d754737e81f6dac37a42e510bdc13b9b72da473d138fdfeb157a23e0d2ad8e1",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v24_vggt_s42_7k_v3",
+      "historical_config_sha256": "ce7081f4df7a5b32f04927e3ea2da069870f9d6c13260083025738916078668d",
+      "historical_init_receipt_sha256": "8c43f71de7021d6c020e205898a61a571e529977356feefa97875915adebd94e",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "sb_seg32_24_vggt_ba_s42_7k_v3",
+      "historical_config_sha256": "e6c91b2b2acc7f51b97c2ecaa39ecf18538fb05570a9e639dfbdd2fd55a6be45",
+      "historical_init_receipt_sha256": "cfac6772cfb6c729e20509bb43126712e45cac5c0780284a3822f8c01baaef14",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_bicycle_final_v24_vggt_ba_s42_7k_v1",
+      "historical_config_sha256": "8a5e1fe0b8f79df2afe07c609c2d2c387c661064276eac9a8036ea7f3b85d7f7",
+      "historical_init_receipt_sha256": "91ea75c75e43abde29881b2cd26933f7da162c1c0a2b9f38c4f93b8e48092ffb",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_bonsai_dev_v24_vggt_ba_post_s43_7k_v2",
+      "historical_config_sha256": "895c8153d2901e1f862cfa58326a4ea06acc66584fef3723ff267d53c23a2827",
+      "historical_init_receipt_sha256": "a2390d53f9988ff74f9973256330333c955f42ad85e8036c5f7ad500b7aec78b",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_bonsai_dev_v24_vggt_ba_pre_s43_7k_v2",
+      "historical_config_sha256": "269f8119737f29eaaf8628ba123b1d4f4318881927fba833d73bc7bee595edff",
+      "historical_init_receipt_sha256": "aad35dad032346eb2977a348884e73d551370cf3975e09e17f6f2a82182d82b6",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_bonsai_dev_v24_vggt_s42_7k_v2",
+      "historical_config_sha256": "a0a60954793492ba9a9f78e7a326db91d67e39f14a297766e14aef1966e8ccdd",
+      "historical_init_receipt_sha256": "16a4873bc8596e2f8abaa632b8be9b468fd6d528dc74f9e6af5aba2aa138567a",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_counter_final_v24_vggt_ba_s42_7k_v1",
+      "historical_config_sha256": "5eba9ad59a688f5fb2bc2e18d19650c14034653a2af3c7d2b86997488947ba60",
+      "historical_init_receipt_sha256": "ad4aa41b92e208ab416887318daedecd6fc67848c6c0faba0cf1d7cf56435aa4",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_kitchen_final_v24_vggt_ba_s42_7k_v1",
+      "historical_config_sha256": "2748f1ad37872eb268de2b5f8e8a714f90256c928fef3c02fcfc973d59aa36bd",
+      "historical_init_receipt_sha256": "66eee8f31af20563d5f028808604820542762b0001193b7bce1a8c6333f3086e",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v06_vggt_s42_7k_v2",
+      "historical_config_sha256": "fbc22053fece4dc89ad153bc3318429814b2db1e495806e29c5d145f09f58ae5",
+      "historical_init_receipt_sha256": "01407a42139ba54993c7d16d8fea1a9f9ce46e1f0bc87b7e7c1da13be5535db7",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v12_vggt_s42_7k_v2",
+      "historical_config_sha256": "e600614df653e934e1ea4090f3572382aed8a6cc41123b7ef2da3df3741d5328",
+      "historical_init_receipt_sha256": "cfa4bec082a953674416180bb31f3b906d27fb7f095c2030749ac35d859c86ef",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v24_vggt_ba_post_s43_7k_v2",
+      "historical_config_sha256": "de3e0107c4652cd28dc9da27c2bf2743254f24205f73d473374ab911fecbd898",
+      "historical_init_receipt_sha256": "4d1143b38aebb49bdf3eba0e68812a6b04d5cfc8573058d1f22a0eda6fdd7ddb",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v24_vggt_ba_pre_s43_7k_v2",
+      "historical_config_sha256": "52078d3466a04dceb0d36f32611d14fe12870377890901cecd8c0983ff2faae1",
+      "historical_init_receipt_sha256": "a3fb01cc4861ebec04eca95d3c3eacd919e62d1fe99b0381c9efdd3afd0d4aa8",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_ba_complete_initialization_branch",
+        "requested": {
+          "bundle_adjustment": true,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": "VGGSfM predict_tracks (aliked+sp)",
+          "track_visibility_threshold": 0.2,
+          "max_query_points": 4096,
+          "query_frames": 8,
+          "fine_tracking": true,
+          "point_construction": "tracked points via batch_np_matrix_to_pycolmap",
+          "max_reprojection_error": 8.0,
+          "camera_model": "SIMPLE_PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": true
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "passed_to_cli_but_inactive_in_ba_branch"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "adapter_metadata_only_inactive_in_ba_branch"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "m360_room_dev_v24_vggt_s42_7k_v2",
+      "historical_config_sha256": "ac6e8270b71259bda8320756565421c109e640c93bda3da493de1c7597775d55",
+      "historical_init_receipt_sha256": "d5232ebc26b69c2ccfa3c8a2511d1b97325a8048d6d4229a1a18f28ea4253045",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "sb_seg32_24_vggt_s42_7k_v1",
+      "historical_config_sha256": "98836f1c23da2d925d84744a3de7a2f48840c5850d6ccc31d9203958654513da",
+      "historical_init_receipt_sha256": "84ac04adff4009e7a4a9af8612d433ee9f7950b6f537ddde4b1828d7831d0848",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    },
+    {
+      "run_id": "sb_window6_vggt_s42_200_v1",
+      "historical_config_sha256": "c2e7ada3fd90918d0e5e75c35bd28836537427ce5fa9a18fa82cdf33fe750355",
+      "historical_init_receipt_sha256": "57a40a3bf3a077c21bca8653d0b42164aa56bd55d6b97cd8b60e52c595acb3bc",
+      "historical_files_unchanged": true,
+      "corrected_policy": {
+        "schema": 2,
+        "branch": "official_no_ba_feedforward_initialization_branch",
+        "requested": {
+          "bundle_adjustment": false,
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream_seeded_random_limit"
+        },
+        "effective_configuration": {
+          "tracker": null,
+          "point_construction": "depth unprojection with confidence filtering",
+          "confidence_threshold": 5.0,
+          "max_points": 100000,
+          "point_sampling": "upstream seeded random limit",
+          "camera_model": "PINHOLE",
+          "shared_camera": false,
+          "bundle_adjustment": false
+        },
+        "argument_status": {
+          "conf_thres_value": {
+            "value": 5.0,
+            "status": "effective"
+          },
+          "vggt_max_points": {
+            "value": 100000,
+            "status": "effective_fixed_adapter_contract"
+          },
+          "vggt_point_sampling": {
+            "value": "upstream_seeded_random_limit",
+            "status": "effective_fixed_adapter_contract"
+          }
+        }
+      }
+    }
+  ]
+}

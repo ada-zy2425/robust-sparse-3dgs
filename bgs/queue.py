@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import signal
 import shutil
 import subprocess
@@ -60,8 +61,8 @@ def _normalized_task(spec):
     task_id=spec["task_id"]
     if not isinstance(task_id,str) or not task_id or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-" for c in task_id):
         raise WorkflowError(f"Invalid task_id: {task_id!r}")
-    if spec["kind"] not in ("bgs_run","resume_qualification","render_benchmark"):
-        raise WorkflowError("Queue only accepts bounded bgs_run, resume_qualification, or render_benchmark tasks")
+    if spec["kind"] not in ("bgs_run","resume_qualification","render_benchmark","initialization_diagnostic"):
+        raise WorkflowError("Queue only accepts bounded reconstruction, resume, render, or initialization-diagnostic tasks")
     argv=list(spec["argv"])
     if not argv or not all(isinstance(x,str) and x for x in argv): raise WorkflowError("argv must be nonempty strings")
     if spec["kind"]=="bgs_run" and not any(argv[i:i+3]==["-m","bgs","run"] for i in range(len(argv)-2)):
@@ -70,6 +71,8 @@ def _normalized_task(spec):
         raise WorkflowError("resume_qualification must invoke qualify_resume.py")
     if spec["kind"]=="render_benchmark" and not any(x.endswith("benchmark_render.py") for x in argv):
         raise WorkflowError("render_benchmark must invoke benchmark_render.py")
+    if spec["kind"]=="initialization_diagnostic" and not any(x.endswith("vggt_confidence_probe.py") for x in argv):
+        raise WorkflowError("initialization_diagnostic must invoke vggt_confidence_probe.py")
     cwd=str(Path(spec["cwd"]).resolve());config=str(Path(spec["config_path"]).resolve())
     if not Path(cwd).is_absolute() or not Path(config).is_absolute(): raise WorkflowError("cwd/config_path must be absolute")
     if not isinstance(spec["dependencies"],list) or not all(isinstance(x,str) for x in spec["dependencies"]):
@@ -177,8 +180,16 @@ def _project_bytes(path):
 
 def _category(log,status):
     if status=="TIMED_OUT":return "TIMEOUT"
-    try:text=Path(log).read_text(errors="replace")[-20000:].lower()
-    except OSError:text=""
+    try:raw=Path(log).read_text(errors="replace")[-20000:]
+    except OSError:raw=""
+    text=raw.lower()
+    # ``bgs run`` reports the bounded inner-stage log path in its outer log.
+    # Include that tail so the aggregate queue does not collapse a concrete
+    # NaN/OOM/registration failure into a generic process failure.
+    match=re.search(r"see\s+(\S+)",raw,flags=re.IGNORECASE)
+    if match:
+        try:text+='\n'+Path(match.group(1)).read_text(errors='replace')[-20000:].lower()
+        except OSError:pass
     patterns=(("out of memory","OOM"),("non-finite","NAN_NONFINITE"),("nan","NAN_NONFINITE"),
               ("registration coverage","REGISTRATION"),("budget insufficient","BUDGET"),
               ("identity","IDENTITY_CONFLICT"),("no space left","DISK_FULL"),

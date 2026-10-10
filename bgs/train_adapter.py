@@ -25,7 +25,8 @@ def patch_train_function(source):
     tree = ast.parse(source)
     cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Runner")
     fn = next(n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == "train")
-    hits = {"start": 0, "loader": 0, "restore": 0, "loop": 0, "finite": 0}
+    hits = {"start": 0, "loader": 0, "restore": 0, "loop": 0, "finite": 0,
+            "stop":0,"sample":0,"forward":0,"scheduler":0,"strategy":0}
     class Patch(ast.NodeTransformer):
         def visit_Assign(self, node):
             name = node.targets[0].id if len(node.targets)==1 and isinstance(node.targets[0], ast.Name) else None
@@ -38,21 +39,39 @@ def patch_train_function(source):
             elif name == "global_tic":
                 hits["restore"] += 1
                 return ast.parse("self._restore_training_state(schedulers)").body + [node]
-            return self.generic_visit(node)
+            elif name == "pbar":
+                node.value=ast.parse("tqdm.tqdm(range(init_step, min(max_steps, self._diagnostic_stop_step or max_steps)))",mode="eval").body
+                hits["stop"]+=1
+            node=self.generic_visit(node)
+            if name=="image_ids":
+                hits["sample"]+=1
+                return [node]+ast.parse("self._trace_point('sample', step, locals())").body
+            target=node.targets[0] if len(node.targets)==1 else None
+            if isinstance(target,(ast.Tuple,ast.List)) and [x.id for x in target.elts if isinstance(x,ast.Name)]==["renders","alphas","info"]:
+                hits["forward"]+=1
+                return [node]+ast.parse("self._trace_point('forward', step, locals())").body
+            return node
         def visit_For(self, node):
             node = self.generic_visit(node)
             if isinstance(node.target, ast.Name) and node.target.id == "step":
                 hits["loop"] += 1
-                node.body += ast.parse("self._after_step(step + 1, schedulers)").body
+                node.body += ast.parse("self._after_step(step + 1, schedulers)\nself._trace_point('after_step', step, locals())").body
+            elif isinstance(node.target,ast.Name) and node.target.id=="scheduler":
+                hits["scheduler"]+=1
+                node.body += ast.parse("self._trace_point('post_update', step, locals())").body
             return node
         def visit_Expr(self, node):
             call = node.value
             if isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute) and call.func.attr == "backward" and isinstance(call.func.value, ast.Name) and call.func.value.id == "loss":
                 hits["finite"] += 1
-                return ast.parse("if not torch.isfinite(loss).all():\n    raise FloatingPointError('Non-finite training loss')").body + [node]
+                return ast.parse("if not torch.isfinite(loss).all():\n    raise FloatingPointError('Non-finite training loss')").body + [node]+ast.parse("self._trace_point('backward', step, locals())").body
+            if isinstance(call,ast.Call) and isinstance(call.func,ast.Attribute) and call.func.attr=="step_post_backward":
+                hits["strategy"]+=1
+                return ast.parse("self._trace_point('pre_strategy', step, locals())").body+[node]+ast.parse("self._trace_point('post_strategy', step, locals())").body
             return self.generic_visit(node)
     fn = Patch().visit(fn)
-    if any(v != 1 for v in hits.values()):
+    expected={key:1 for key in hits};expected["strategy"]=2
+    if hits!=expected:
         raise WorkflowError(f"Upstream training contract changed: {hits}")
     fn.decorator_list = []
     module = ast.fix_missing_locations(ast.Module(body=[fn], type_ignores=[]))
@@ -223,6 +242,8 @@ def make_runner(spec, manifest, training_dir, output, viewer=False, read_only=Fa
     runner._checkpoint=Path(output)/"resume.pt"
     runner._manifest=manifest
     runner._milestone_eval_seconds=0.
+    runner._diagnostic_stop_step=None
+    runner._trace_point=lambda label,step,local_vars:None
     def make_loader(self):
         n=len(self.trainset)
         sequence=[]

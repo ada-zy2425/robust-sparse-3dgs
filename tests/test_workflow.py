@@ -114,6 +114,13 @@ class QueueTests(unittest.TestCase):
         self.assertEqual(added['kind'],'render_benchmark')
         task=self.task('bad_benchmark');task['kind']='render_benchmark'
         with self.assertRaises(WorkflowError):add_task(state,task)
+
+    def test_initialization_diagnostic_is_narrowly_scoped(self):
+        task=self.task('probe');task['kind']='initialization_diagnostic'
+        task['argv']=[sys.executable,str(self.root/'vggt_confidence_probe.py'),'--out',str(self.root/'x')]
+        self.assertEqual(add_task(self.state(),task)['kind'],'initialization_diagnostic')
+        bad=self.task('bad_probe');bad['kind']='initialization_diagnostic'
+        with self.assertRaises(WorkflowError):add_task(self.state(),bad)
     def test_explicit_bgs_retry_reaches_inner_bounded_runner(self):
         task=self.task('retry')
         first=task_snapshot(task,1);second=task_snapshot(task,2)
@@ -142,6 +149,12 @@ class QueueTests(unittest.TestCase):
         atomic_json(snapshot,{'task':{'identity_hash':'changed'}})
         with self.assertRaises(WorkflowError):worker(snapshot,receipt,expected)
         self.assertFalse(receipt.exists())
+
+    def test_queue_failure_category_follows_bounded_inner_log(self):
+        from bgs.queue import _category
+        inner=self.root/'MixedCaseInner.log';inner.write_text('FloatingPointError: Non-finite model state\n')
+        outer=self.root/'outer.log';outer.write_text(f'FAILED; see {inner}\n')
+        self.assertEqual(_category(outer,'FAILED'),'NAN_NONFINITE')
 
 
 class SplitTests(unittest.TestCase):
@@ -180,6 +193,26 @@ class SplitTests(unittest.TestCase):
         with mock.patch.dict(os.environ,{'CUDA_VISIBLE_DEVICES':'3'}):
             self.assertEqual(selected_visible_device({'gpu':'0'}),'3')
 
+    def test_resume_trace_does_not_compare_stale_previous_step_locals(self):
+        from scripts.qualify_resume import _trace_local_names
+        self.assertEqual(_trace_local_names('sample'),['image_ids'])
+        self.assertNotIn('loss',_trace_local_names('forward'))
+        self.assertIn('loss',_trace_local_names('backward'))
+
+    def test_resume_trace_ignores_only_culled_projected_means(self):
+        import torch
+        from scripts.qualify_resume import _compare_tree,_semantic_trace_record
+        left={'renders':torch.ones(1),'render_info':{
+              'radii':torch.tensor([[2,0]]),'means2d':torch.tensor([[[1.,2.],[9.,9.]]])}}
+        right={'renders':torch.ones(1),'render_info':{
+               'radii':torch.tensor([[2,0]]),'means2d':torch.tensor([[[1.,2.],[-4.,7.]]])}}
+        self.assertFalse(_compare_tree(left,right)['exact'])
+        self.assertTrue(_compare_tree(_semantic_trace_record(left),
+                                      _semantic_trace_record(right))['exact'])
+        right['render_info']['means2d'][0,0,0]=1.5
+        self.assertFalse(_compare_tree(_semantic_trace_record(left),
+                                       _semantic_trace_record(right))['exact'])
+
     def test_formal_diagnostic_steps_are_predeclared(self):
         from bgs.__main__ import diagnostic_steps
         self.assertEqual(diagnostic_steps(200),[])
@@ -198,9 +231,29 @@ class SplitTests(unittest.TestCase):
         policy=_vggt_policy({'vggt_ba':False,'vggt_confidence':5.0,
                              'vggt_max_points':100000,
                              'vggt_point_sampling':'upstream_seeded_random_limit'})
-        self.assertEqual(policy['max_points'],100000)
-        self.assertFalse(policy['bundle_adjustment'])
+        self.assertEqual(policy['effective_configuration']['max_points'],100000)
+        self.assertFalse(policy['effective_configuration']['bundle_adjustment'])
+        self.assertEqual(policy['argument_status']['conf_thres_value']['status'],'effective')
         with self.assertRaises(WorkflowError):_vggt_policy({'vggt_max_points':50000})
+
+    def test_vggt_ba_policy_marks_no_ba_arguments_inactive(self):
+        from bgs.initialize import _vggt_policy
+        policy=_vggt_policy({'vggt_ba':True,'vggt_confidence':17.,
+                             'vggt_max_points':123,'vggt_point_sampling':'not-used'})
+        self.assertEqual(policy['branch'],'official_ba_complete_initialization_branch')
+        self.assertTrue(policy['effective_configuration']['bundle_adjustment'])
+        self.assertEqual(policy['effective_configuration']['tracker'],'VGGSfM predict_tracks (aliked+sp)')
+        self.assertEqual(policy['argument_status']['conf_thres_value']['status'],
+                         'passed_to_cli_but_inactive_in_ba_branch')
+        self.assertNotIn('confidence_threshold',policy['effective_configuration'])
+
+    def test_vggt_ba_pair_source_patch_is_exact(self):
+        from bgs.vggt_ba_pair import BA_CALL,BA_REPLACEMENT,patch_demo_source
+        source=f"before\n{BA_CALL}\nafter\n"
+        patched=patch_demo_source(source)
+        self.assertNotIn(BA_CALL,patched);self.assertIn(BA_REPLACEMENT,patched)
+        with self.assertRaises(WorkflowError):patch_demo_source("no matching call")
+        with self.assertRaises(WorkflowError):patch_demo_source(source+source)
 
     def test_vggt_wrapper_redirects_only_pinned_dinov2_repository(self):
         from bgs.vggt_wrapper import local_hub_loader

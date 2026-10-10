@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "scope": "training-randomness repeat using the same immutable initialization snapshots",
+  "seeds": [
+    42,
+    43
+  ],
+  "scenes": {
+    "bonsai": {
+      "paired_deltas": [
+        {
+          "seed": 42,
+          "status": "UNAVAILABLE",
+          "psnr": null,
+          "ssim": null,
+          "lpips": null,
+          "num_gaussians": null,
+          "model_bytes": null
+        },
+        {
+          "seed": 43,
+          "status": "UNAVAILABLE",
+          "psnr": null,
+          "ssim": null,
+          "lpips": null,
+          "num_gaussians": null,
+          "model_bytes": null
+        }
+      ],
+      "valid_quality_pairs": 0,
+      "summary": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null,
+        "num_gaussians": null,
+        "model_bytes": null
+      }
+    },
+    "room": {
+      "paired_deltas": [
+        {
+          "seed": 42,
+          "status": "UNAVAILABLE",
+          "psnr": null,
+          "ssim": null,
+          "lpips": null,
+          "num_gaussians": null,
+          "model_bytes": null
+        },
+        {
+          "seed": 43,
+          "status": "UNAVAILABLE",
+          "psnr": null,
+          "ssim": null,
+          "lpips": null,
+          "num_gaussians": null,
+          "model_bytes": null
+        }
+      ],
+      "valid_quality_pairs": 0,
+      "summary": {
+        "psnr": null,
+        "ssim": null,
+        "lpips": null,
+        "num_gaussians": null,
+        "model_bytes": null
+      }
+    }
+  },
+  "limit": "Not independent initialization randomness; two development scenes only."
+}

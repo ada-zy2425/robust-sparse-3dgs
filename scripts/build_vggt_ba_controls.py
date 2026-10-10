@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Build immutable one-factor official-BA controls from completed no-BA configs."""
+"""Build historical official-BA branch comparisons from feed-forward configs.
+
+The upstream switch changes several initialization operations and is not an
+isolated BA ablation. Existing generated identities and receipts stay intact.
+"""
 from __future__ import annotations
 
 import argparse
@@ -21,7 +25,7 @@ def main() -> None:
 
     root = Path(args.project_root).resolve()
     if len(args.base_config) != 3 or len(args.gpu) != 3:
-        raise WorkflowError("Official-BA control v1 requires exactly three base configs and GPUs")
+        raise WorkflowError("Official use_ba branch matrix requires exactly three base configs and GPUs")
     if args.revision < 1:
         raise WorkflowError("revision must be positive")
     if (args.timeout_s + 905) / 3600 > args.max_gpu_hours:
@@ -38,7 +42,7 @@ def main() -> None:
     config_dir = root / "configs" / tag
     task_dir = root / "remote_tasks" / tag
     if config_dir.exists() or task_dir.exists():
-        raise WorkflowError("Refusing to overwrite immutable BA control matrix")
+        raise WorkflowError("Refusing to overwrite immutable use_ba branch matrix")
     config_dir.mkdir(parents=True)
     task_dir.mkdir(parents=True)
     created = []
@@ -69,7 +73,7 @@ def main() -> None:
             timeout_s=args.timeout_s,
             vggt_ba=True,
             dinov2_root=str(dinov2_root),
-            hypothesis="Official bundle adjustment improves camera/point reliability at fixed inputs and training schedule.",
+            hypothesis="The complete official use_ba initialization branch improves reliability at fixed inputs and training schedule.",
             independent_contribution="Controlled diagnosis and offline qualification; bundle adjustment is established upstream work.",
             control_of=base["run_id"],
             control_of_sha256=file_hash(base_path),
@@ -108,9 +112,10 @@ def main() -> None:
     atomic_json(task_dir / "matrix_receipt.json", {
         "schema": 1,
         "revision": args.revision,
-        "factor": "vggt_ba: false -> true",
-        "fixed": ["manifest", "24 views", "7000 steps", "max_edge=1024", "seed=42", "confidence=5", "max_points=100000"],
-        "scope": "official upstream BA reliability control; not a new algorithm",
+        "factor": "complete official feed-forward branch -> complete official use_ba branch",
+        "fixed": ["manifest", "24 views", "7000 steps", "max_edge=1024", "seed=42", "renderer", "GPU family"],
+        "inactive_in_ba_branch": ["conf_thres_value", "100000-point random truncation"],
+        "scope": "official upstream branch-level reliability comparison; not an isolated BA operation or a new algorithm",
         "created": created,
     })
     print(task_dir / "matrix_receipt.json")

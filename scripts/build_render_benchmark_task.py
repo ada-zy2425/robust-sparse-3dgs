@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 
 from bgs.core import WorkflowError, atomic_json, file_hash, read_json
 
@@ -11,6 +13,7 @@ from bgs.core import WorkflowError, atomic_json, file_hash, read_json
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-root", required=True)
+    parser.add_argument("--source-root", help="Clean source tree to execute; defaults to project root")
     parser.add_argument("--config", required=True)
     parser.add_argument("--gpu", required=True, help="INDEX:GPU-UUID")
     parser.add_argument("--out-dir", required=True)
@@ -20,6 +23,10 @@ def main() -> None:
     args = parser.parse_args()
 
     root = Path(args.project_root).resolve()
+    source_root = Path(args.source_root).resolve() if args.source_root else root
+    benchmark_script=source_root / "scripts" / "benchmark_render.py"
+    if not benchmark_script.is_file():
+        raise WorkflowError("Source root does not contain scripts/benchmark_render.py")
     config_path = Path(args.config).resolve()
     config = read_json(config_path)
     index, separator, gpu_uuid = args.gpu.partition(":")
@@ -40,14 +47,14 @@ def main() -> None:
         "kind": "render_benchmark",
         "argv": [
             str(root / "envs" / "gsplat" / "bin" / "python"),
-            str(root / "scripts" / "benchmark_render.py"),
+            str(benchmark_script),
             "--config", str(config_path),
             "--out", str(result_path),
             "--warmup", "5", "--repeats", "30", "--max-cameras", "64",
         ],
-        "cwd": str(root),
+        "cwd": str(source_root),
         "env": {
-            "PYTHONPATH": str(root),
+            "PYTHONPATH": str(source_root),
             "TORCH_HOME": str(root / "cache" / "torch"),
             "TMPDIR": str(root / "tmp" / "performance_mipnerf360_dev_v1" / task_id),
         },

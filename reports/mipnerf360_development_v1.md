@@ -32,11 +32,11 @@ The fixed matrix therefore produced full-coverage initializations in 1/9 COLMAP 
 | room / 24 / VGGT no BA | 100,000 | 17.614 | 0.5859 | 0.3356 | 728,207 | 1,595.5 | 1,841.9 | 0.5116 |
 | garden / 24 / COLMAP | 6,883 | 20.126 | 0.4642 | 0.2737 | 1,389,863 | 4,254.3 | 4,541.7 | 1.2616 |
 
-More views helped room quality, but method success was scene dependent. Point count alone was not a reliability signal: bonsai's nominally valid 13-point VGGT model was weak, while garden's no-BA path produced no usable points.
+More views helped room quality, but method success was scene dependent. Point count alone was not a reliability signal: bonsai's nominally valid 13-point VGGT model was weak, while garden's no-BA path produced no usable points. A later pinned inference replay showed that bonsai did not “predict only 13 points”: 13 of 6,439,776 finite confidence values passed the fixed 5.0 gate, whereas room had 3,358,153 pass and was then randomly capped at 100,000. The hard gate is therefore the direct cause of the retained count difference; it is not a geometry-absence diagnosis.
 
-## One-factor official BA control
+## Official BA-branch system comparison
 
-The development observation implicated camera estimation, so the next round changed one factor at 24 views: VGGT's official upstream bundle adjustment was enabled. Manifest, views, confidence threshold, 100k point cap, schedule, resolution, seed, renderer, and GPU family stayed fixed. BA is established upstream work; this repository contributes the controlled diagnosis, offline dependency qualification, and evidence accounting.
+The development observation implicated camera estimation, so the next round enabled VGGT's official upstream `use_ba` branch at 24 views. This is a system comparison, not a one-factor BA ablation: the branch uses VGGSfM tracking, track/reprojection filtering, tracked-point construction and `SIMPLE_PINHOLE` handling before calling `pycolmap.bundle_adjustment`. The feed-forward branch instead applies `conf_thres_value`, randomly limits accepted depth points to 100k and uses a `PINHOLE` model. Although the old submitted configs contain confidence and max-point fields for both arms, those fields are inactive in the BA branch. Manifest, views, gsplat schedule, resolution, seed, renderer and GPU family stayed fixed. BA is established upstream work; this repository contributes the controlled diagnosis, offline dependency qualification, corrected effective-configuration receipts and evidence accounting.
 
 | Scene | Reference arm | Reference PSNR / SSIM / LPIPS | Official BA PSNR / SSIM / LPIPS | BA init pts | BA final GS | BA center / orientation residual |
 |---|---|---|---|---:|---:|---:|
@@ -49,6 +49,19 @@ At 3k, garden BA reached 19.871/0.4462/0.3318 versus COLMAP's 20.359/0.4579/0.38
 The same tradeoff remained at 7k: BA improved garden LPIPS by 0.0242 and converted a no-BA initialization failure into a complete model, while PSNR fell 0.515 dB, SSIM fell 0.0280, and the model grew by 152,846 Gaussians relative to COLMAP. BA end-to-end costs were 0.5113/0.5179/1.1422 GPU-hours for bonsai/room/garden respectively.
 
 The first BA-control identity is retained as a dependency failure caused by an incorrect local DINOv2 source root. Versioned v2 fixed that configuration before GPU initialization and used no retry.
+
+## Matched BA-operation ablation
+
+The branch-level comparison above cannot identify the BA call. The matched control therefore saved each official-branch reconstruction immediately before `pycolmap.bundle_adjustment`, loaded two distinct `pycolmap.Reconstruction` objects from that immutable snapshot, applied BA only to the post copy and wrote the two models to separate directories. The receipts verify different object identities and an unchanged source snapshot. The downstream image set, tracks, initial points, camera model, preprocessing, 7k schedule, resolution and training seed were otherwise matched. The original feed-forward/no-BA pipeline is not one of these arms.
+
+| Scene | Images / points / observations | Mean reprojection px pre → post | Camera center / rotation mean change | Point mean change | BA time |
+|---|---:|---:|---:|---:|---:|
+| bonsai | 24 / 22,192 / 64,192 | 10.925 → 2.491 | 0.0310 / 1.432° | 0.0629 | 1.49 s |
+| room | 24 / 36,226 / 263,074 | 10.500 → 2.457 | 0.0415 / 0.283° | 0.0773 | 4.93 s |
+
+At seed 42, both pre-BA arms became non-finite at the first step-100 finite/checkpoint gate; the single allowed exact retry failed in the same place. The post-BA arms completed: bonsai reached 17.4095/0.5015/0.3464 with 740,972 Gaussians, while room reached 19.7717/0.6735/0.2683 with 546,696. Their formal all-heldout-camera render means were 2.065 and 1.831 ms. A seed-43 repeat reused the immutable seed-42 initialization pair, so it tests downstream training randomness only: both pre arms again failed at step 100 and both post arms completed at 17.4630/0.5043/0.3455 and 19.8260/0.6718/0.2681.
+
+There are therefore zero valid paired quality/model/render endpoints. The supported conclusion is that the joint BA operation changed downstream trainability for these two snapshots across two training seeds, while reducing their reprojection error. It is not evidence for a numerical PSNR/SSIM/LPIPS gain, cannot separate camera optimization from point optimization, and is not an independent-initialization repeat. Failed rows, logs and costs remain in the [seed-42 report](ba_operation_ablation_s42_v1/results.md), [seed-43 report](ba_operation_ablation_s43_v2/results.md) and [aggregate receipt](ba_operation_ablation_seed_aggregate_v1.json).
 
 ## Multi-camera rendering performance
 
@@ -72,7 +85,8 @@ The garden BA benchmark also completed on its originally assigned A800 after ext
 ## Interpretation and limits
 
 - The 6/12/24 matrix establishes failure rates and one-view-count curve on development data; it does not create a strong statistical generalization claim.
-- Official BA gives full-coverage initialization on all three 24-view inputs and materially improves bonsai and room held-out quality. Garden confirms a reliability and LPIPS benefit, but not a PSNR/SSIM or performance benefit.
+- The official BA branch gives full-coverage initialization on all three 24-view inputs and materially improves bonsai and room held-out quality. This supports the complete upstream branch, not the isolated BA call. Garden confirms a reliability and LPIPS benefit, but not a PSNR/SSIM or performance benefit.
+- The matched operation control verifies a trainability difference on two development snapshots, but its pre-BA failures prevent an image-quality effect estimate. A separate predeclared mechanism study would be needed before treating that stability observation as a general algorithmic result.
 - Mip-NeRF 360 redistribution terms were not resolved, so RGB, derived comparison canvases, PLYs, and videos stay in private evidence storage.
 - VGGT pretraining overlap with benchmark scenes is unknown and explicitly not ruled out.
 - Shape-changing resume remains unqualified; every formal result completed continuously.

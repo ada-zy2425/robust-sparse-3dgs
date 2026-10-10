@@ -9,13 +9,54 @@ from .core import WorkflowError, read_json, atomic_json, file_hash
 
 
 def _vggt_policy(spec):
-    policy={"bundle_adjustment":bool(spec.get("vggt_ba",False)),
-            "confidence_threshold":float(spec.get("vggt_confidence",5.0)),
-            "max_points":int(spec.get("vggt_max_points",100000)),
-            "point_sampling":spec.get("vggt_point_sampling","upstream_seeded_random_limit")}
-    if policy["max_points"]!=100000 or policy["point_sampling"]!="upstream_seeded_random_limit":
+    requested={"bundle_adjustment":bool(spec.get("vggt_ba",False)),
+               "confidence_threshold":float(spec.get("vggt_confidence",5.0)),
+               "max_points":int(spec.get("vggt_max_points",100000)),
+               "point_sampling":spec.get("vggt_point_sampling","upstream_seeded_random_limit")}
+    if (not requested["bundle_adjustment"] and
+        (requested["max_points"]!=100000 or requested["point_sampling"]!="upstream_seeded_random_limit")):
         raise WorkflowError("Pinned VGGT demo fixes a seeded random 100000-point limit; changing it requires a new pinned adapter")
-    return policy
+    if requested["bundle_adjustment"]:
+        branch="official_ba_complete_initialization_branch"
+        effective={
+            "tracker":"VGGSfM predict_tracks (aliked+sp)",
+            "track_visibility_threshold":0.2,
+            "max_query_points":4096,
+            "query_frames":8,
+            "fine_tracking":True,
+            "point_construction":"tracked points via batch_np_matrix_to_pycolmap",
+            "max_reprojection_error":8.0,
+            "camera_model":"SIMPLE_PINHOLE",
+            "shared_camera":False,
+            "bundle_adjustment":True,
+        }
+        arguments={
+            "conf_thres_value":{"value":requested["confidence_threshold"],
+                                "status":"passed_to_cli_but_inactive_in_ba_branch"},
+            "vggt_max_points":{"value":requested["max_points"],
+                               "status":"adapter_metadata_only_inactive_in_ba_branch"},
+            "vggt_point_sampling":{"value":requested["point_sampling"],
+                                   "status":"adapter_metadata_only_inactive_in_ba_branch"},
+        }
+    else:
+        branch="official_no_ba_feedforward_initialization_branch"
+        effective={
+            "tracker":None,
+            "point_construction":"depth unprojection with confidence filtering",
+            "confidence_threshold":requested["confidence_threshold"],
+            "max_points":100000,
+            "point_sampling":"upstream seeded random limit",
+            "camera_model":"PINHOLE",
+            "shared_camera":False,
+            "bundle_adjustment":False,
+        }
+        arguments={
+            "conf_thres_value":{"value":requested["confidence_threshold"],"status":"effective"},
+            "vggt_max_points":{"value":requested["max_points"],"status":"effective_fixed_adapter_contract"},
+            "vggt_point_sampling":{"value":requested["point_sampling"],"status":"effective_fixed_adapter_contract"},
+        }
+    return {"schema":2,"branch":branch,"requested":requested,
+            "effective_configuration":effective,"argument_status":arguments}
 
 
 def _verified_dinov2_root(spec):
@@ -102,20 +143,46 @@ def initialize(spec,manifest,prepared):
         attempt=prepared/("vggt_attempt_"+uuid.uuid4().hex[:10]); attempt.mkdir()
         (attempt/"images").symlink_to(prepared/"images",target_is_directory=True)
         demo_args=["--scene_dir",str(attempt),"--seed",str(spec["seed"]),
-                   "--conf_thres_value",str(policy["confidence_threshold"])]
-        if policy["bundle_adjustment"]:
+                   "--conf_thres_value",str(policy["requested"]["confidence_threshold"])]
+        if policy["requested"]["bundle_adjustment"]:
             dinov2_root=_verified_dinov2_root(spec)
             _verify_ba_cache()
-            command=[spec.get("vggt_python",spec["python"]),"-m","bgs.vggt_wrapper",
-                     "--demo",str(root/"demo_colmap.py"),"--dinov2-root",str(dinov2_root),
-                     *demo_args,"--use_ba"]
+            pair_arm=spec.get("vggt_ba_ablation_arm")
+            if pair_arm:
+                if pair_arm not in ("pre_ba","post_ba"):
+                    raise WorkflowError("vggt_ba_ablation_arm must be pre_ba or post_ba")
+                pair_root=Path(spec["vggt_ba_pair_root"]).resolve()
+                if spec.get("vggt_ba_pair_generate",False):
+                    command=[spec.get("vggt_python",spec["python"]),"-m","bgs.vggt_ba_pair",
+                             "--demo",str(root/"demo_colmap.py"),"--dinov2-root",str(dinov2_root),
+                             "--pair-root",str(pair_root),*demo_args,"--use_ba"]
+                else:
+                    command=None
+                policy["paired_ablation"]={"arm":pair_arm,"pair_root":str(pair_root),
+                    "generation":"create_from_one_pre_ba_reconstruction" if command else "reuse_immutable_pair"}
+            else:
+                command=[spec.get("vggt_python",spec["python"]),"-m","bgs.vggt_wrapper",
+                         "--demo",str(root/"demo_colmap.py"),"--dinov2-root",str(dinov2_root),
+                         *demo_args,"--use_ba"]
         else:
+            pair_arm=None
             command=[spec.get("vggt_python",spec["python"]),str(root/"demo_colmap.py"),*demo_args]
         repo_root=str(Path(__file__).resolve().parents[1])
         env=os.environ.copy()
         env["PYTHONPATH"]=repo_root+(os.pathsep+env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
-        subprocess.run(command,cwd=root,env=env,check=True)
-        source_model=attempt/"sparse"
+        if command is not None:
+            subprocess.run(command,cwd=root,env=env,check=True)
+        if pair_arm:
+            receipt=read_json(pair_root/"pair_receipt.json")
+            if receipt["demo_sha256"]!=pins["vggt"]["files"]["demo_colmap.py"]:
+                raise WorkflowError("BA pair was made from a different pinned VGGT demo")
+            expected_input=file_hash(prepared/"staging.json")
+            if receipt["staging_receipt_sha256"]!=expected_input:
+                raise WorkflowError("BA pair input differs from this immutable training split")
+            source_model=pair_root/pair_arm
+            policy["paired_ablation"]["pair_receipt_sha256"]=file_hash(pair_root/"pair_receipt.json")
+        else:
+            source_model=attempt/"sparse"
     else:
         raise WorkflowError("Unknown initializer")
     model=pycolmap.Reconstruction(str(source_model))
@@ -133,5 +200,5 @@ def initialize(spec,manifest,prepared):
     files={p.name:file_hash(p) for p in dest.iterdir() if p.is_file() and p.suffix in (".bin",".txt")}
     atomic_json(prepared/"init_receipt.json",{"initializer":spec["initializer"],"train_only":True,
         "registered_names":sorted(registered),"num_points":len(model.points3D),"model":str(dest),"files":files,
-        "policy":policy,
+        "policy":policy,"effective_configuration":policy.get("effective_configuration") if policy else policy,
         "scope":"official initialization baseline; no new reliability mechanism yet"})

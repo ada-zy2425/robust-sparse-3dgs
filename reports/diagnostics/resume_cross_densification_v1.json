@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "status": "NOT_QUALIFIED",
+  "formal_results_boundary": "continuous runs only",
+  "checkpoint_step": 700,
+  "initial_gaussians": 208,
+  "checkpoint_gaussians": 262,
+  "v8": {
+    "qualification_sha256": "cdd84f5fca7fdd370ab0bcfe6daeef102a8303ffba9fa9742179da2deaa2d09d",
+    "trace_sha256": "a10175e6cee35e65c05ff80fcf23b48cc247fa0a16eca3702b7cb2df58b526b5",
+    "gpu_hours": 0.007891892595216632,
+    "state_sample_and_forward_exact": true,
+    "first_divergence": "backward",
+    "continuous_vs_resumed_max_backward_difference": 6.915070116519928e-08,
+    "same_condition_repeat_max_backward_difference": 4.842877388000488e-08,
+    "post_update_max_difference": 2.384185791015625e-07,
+    "first_structural_update_counts": [371, 371, 371],
+    "state_fields": [
+      "splats and gradients",
+      "optimizer parameter binding, momentum, step and learning rate",
+      "scheduler and strategy state",
+      "Python, NumPy, Torch and CUDA RNG",
+      "camera sample",
+      "Scene and Stage references"
+    ]
+  },
+  "v6": {
+    "qualification_sha256": "4d085a6686491689f1e844043cb765e9353a46758e5213624d2d9b4f5d611a78",
+    "gpu_hours": 0.02245602923652364,
+    "sample_order_exact": true,
+    "first_resumed_repeat_count_divergence_step": 900,
+    "first_continuous_vs_resumed_count_divergence_step": 1000,
+    "boundary_gaussian_counts": {
+      "700": [362, 362, 362],
+      "800": [551, 551, 551],
+      "900": [877, 877, 876],
+      "1000": [1407, 1409, 1362],
+      "1100": [2180, 2211, 2103],
+      "1200": [3261, 3299, 3236],
+      "1300": [4755, 4798, 4780]
+    }
+  },
+  "upstream_code_evidence": {
+    "file": "gsplat/cuda/csrc/RasterizeToPixels3DGSSerialBatchBwd.cu",
+    "sha256": "00c7ef050aed6f79b6c6938b9a537da2ba23a74893dab6e95eee12c0ab2a120e",
+    "operation": "atomicAdd_system gradient accumulation"
+  },
+  "excluded_first_causes": [
+    "missing optimizer binding or optimizer state",
+    "missing scheduler or strategy state",
+    "different Python/NumPy/Torch/CUDA RNG or camera sample order",
+    "stale Scene or Stage reference"
+  ],
+  "trace_semantics": "Raw trace is retained. Screen coordinates for radius-zero culled Gaussians are excluded from the contributing-forward comparison; RGB and alpha remain exact.",
+  "limit": "No tolerance was relaxed and the upstream CUDA kernel was not modified."
+}
