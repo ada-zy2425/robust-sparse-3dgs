@@ -15,8 +15,9 @@ def main():
     p.add_argument("--gpu",action="append",required=True,help="INDEX:GPU-UUID; repeat up to four times")
     p.add_argument("--steps",type=int,default=7000)
     p.add_argument("--revision",type=int,default=1)
-    p.add_argument("--max-gpu-hours",type=float,default=1.5)
+    p.add_argument("--max-gpu-hours",type=float,default=2.0)
     p.add_argument("--timeout-s",type=int,default=5400)
+    p.add_argument("--initialization-reserve-s",type=int,default=900)
     args=p.parse_args()
     root=Path(args.project_root).resolve();registry_path=Path(args.registry).resolve()
     registry=read_json(registry_path)
@@ -36,10 +37,14 @@ def main():
         raise WorkflowError("Formal v1 matrix fixes a predeclared 7000-step total schedule")
     if args.revision<1:
         raise WorkflowError("revision must be a positive integer")
-    # The inner bounded runner reserves timeout plus a five-second process
-    # cleanup window.  Reject matrices that could only fail before launch.
-    if (args.timeout_s+5)/3600>args.max_gpu_hours:
-        raise WorkflowError("timeout plus cleanup window exceeds task GPU-hour reservation")
+    if args.initialization_reserve_s<=0:
+        raise WorkflowError("initialization reserve must be positive")
+    # Initialization is charged before the training stage asks to reserve its
+    # timeout plus a five-second cleanup window.  Preserve an explicit margin
+    # so a successful initializer does not make training impossible to launch.
+    required_hours=(args.initialization_reserve_s+args.timeout_s+5)/3600
+    if required_hours>args.max_gpu_hours:
+        raise WorkflowError("initialization plus training cleanup window exceeds task GPU-hour reservation")
 
     matrix_tag=f"mipnerf360_dev_v{args.revision}"
     configs=root/"configs"/matrix_tag
@@ -95,7 +100,8 @@ def main():
                       "priority":20+views+(0 if initializer=="colmap" else 1)}
                 atomic_json(task_path,task);created.append({"run_id":run_id,"config":str(config_path),"task":str(task_path)})
     receipt={"schema":1,"registry":str(registry_path),"registry_sha256":file_hash(registry_path),
-             "revision":args.revision,"steps":7000,"seed":42,"max_edge":1024,"tasks":created}
+             "revision":args.revision,"steps":7000,"seed":42,"max_edge":1024,
+             "initialization_reserve_s":args.initialization_reserve_s,"tasks":created}
     receipt_path=tasks/"matrix_receipt.json"
     if receipt_path.exists():raise WorkflowError("Matrix receipt already exists")
     atomic_json(receipt_path,receipt)
