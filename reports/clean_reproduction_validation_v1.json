@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "status": "SUCCEEDED",
+  "commit": "c569b12",
+  "source_materialization": "git archive into a previously absent clean directory",
+  "archive_sha256": "b8a57be76f3f821690569beb5bfc0d29ca940d9c17a7a8f3610c2a6ecdcd1fdf",
+  "reused_read_only_assets": [
+    "pinned third_party source cache",
+    "licensed development-scene data",
+    "completed development checkpoint"
+  ],
+  "checks": {
+    "cpu_unittest": {
+      "exit_code": 0,
+      "passed": 41,
+      "failed": 0
+    },
+    "pinned_trainer_source_contract": {
+      "exit_code": 0,
+      "status": "OK"
+    },
+    "real_development_manifest_hash_verification": {
+      "exit_code": 0,
+      "status": "OK",
+      "scene": "room",
+      "training_views": 24
+    },
+    "queued_read_only_render_benchmark": {
+      "exit_code": 0,
+      "status": "SUCCEEDED",
+      "task_id": "bench_m360_room_dev_v24_vggt_ba_s42_7k_v2_mc_v99",
+      "hardware": "NVIDIA A800-SXM4-80GB",
+      "camera_count": 39,
+      "sample_count": 1170,
+      "num_gaussians": 546566,
+      "mean_ms": 1.8367871387392027,
+      "p95_ms": 2.230128739029169,
+      "fps_from_mean": 544.4288991953714,
+      "gpu_hours": 0.005093874605372548,
+      "receipt_sha256": "43c7c1ff9c930399862c73c0ffbc037cca2343b34f333f8722a7534d18ffd0d4"
+    }
+  },
+  "preserved_preflight_failure": {
+    "stage": "queue add before task submission",
+    "cause": "orchestration command omitted both the clean working directory and PYTHONPATH",
+    "effect": "ModuleNotFoundError for bgs; no task was added and no GPU time was consumed",
+    "correction": "rerun with the clean source directory as explicit PYTHONPATH; task identity and benchmark inputs unchanged"
+  },
+  "queue_budget": {
+    "total_gpu_hours": 24.0,
+    "charged_before": 12.211126918933974,
+    "charged_after": 12.216220793539346,
+    "reserved_after": 0.0,
+    "remaining_after": 11.783779206460654
+  },
+  "limits": "The existing checkpoint, licensed data and dependency caches were intentionally reused. This verifies code and command reproducibility, not independent retraining."
+}

@@ -9,6 +9,7 @@ These gates separate a working engineering system from complete experimental evi
 - The aggregate-budget queue dispatched independent GPU tasks, retained failed registration/dependency runs and enforced one reasoned retry.
 - A localhost-only viewer was checked in a real WebGL browser: a calibrated default view rendered and a deterministic orbit drag changed the canvas; all viewer, browser and tunnel processes were then stopped.
 - Exact-source trainer patching and CPU contracts pass. Shape-changing resume is deliberately excluded because qualification failed; the first-divergence diagnosis is documented separately and does not relax the qualification tolerance.
+- A source-only archive of commit `c569b12` was extracted into a new directory and passed 41/41 tests, the pinned trainer source contract, real development-manifest hash verification and a queued 39-camera GPU render benchmark while reusing only the declared dependency/data/checkpoint caches.
 
 ## EVIDENCE_READY — PASS (scoped six-scene evidence)
 

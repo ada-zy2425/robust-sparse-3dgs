@@ -153,4 +153,6 @@ PYTHONPATH="$CLEAN_ROOT" "$GSPLAT_PY" scripts/build_render_benchmark_task.py \
 
 The clean tree needs access to the pinned `third_party/gsplat` checkout for the source-contract line; in the verified deployment it was linked read-only from the qualified dependency cache. Record the clean commit, commands and exit codes. This validates code/document reproducibility while keeping historical run identities immutable; it does not pretend that an existing checkpoint was retrained.
 
+This sequence was exercised from clean commit `c569b12`: 41/41 CPU tests, the pinned trainer contract and a real 24-view room manifest passed. The queued read-only GPU check then rendered all 39 hold-out cameras for 1,170 synchronized samples from the clean source tree at 1.837 ms mean / 2.230 ms p95, consuming 0.005094 GPU-hours. The sanitized command/exit/hash receipt is [clean reproduction validation v1](../reports/clean_reproduction_validation_v1.json).
+
 The sanitized development CSV and performance JSON under `reports/` are examples of the expected receipts. Mip-NeRF 360 RGB, derived comparison panels/video, PLYs and VGGT weights remain private because redistribution/commercial terms are not established.
