@@ -214,6 +214,23 @@ class SplitTests(unittest.TestCase):
         load("other/repository","model")
         self.assertEqual(calls[-1],(("other/repository","model"),{}))
 
+    def test_vggt_ba_cache_is_hash_qualified_before_gpu_work(self):
+        from bgs.initialize import _verify_ba_cache
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);checkpoints=root/'hub'/'checkpoints';checkpoints.mkdir(parents=True)
+            files={'vggsfm_v2_tracker.pt':b'tracker','dinov2_vitb14_reg4_pretrain.pth':b'dino',
+                   'aliked-n16.pth':b'aliked','superpoint_v1.pth':b'superpoint'}
+            for name,data in files.items():(checkpoints/name).write_bytes(data)
+            pins={'vggsfm_tracker':{'sha256':file_hash(checkpoints/'vggsfm_v2_tracker.pt')},
+                  'dinov2':{'checkpoint_sha256':file_hash(checkpoints/'dinov2_vitb14_reg4_pretrain.pth')},
+                  'aliked':{'sha256':file_hash(checkpoints/'aliked-n16.pth')},
+                  'superpoint':{'sha256':file_hash(checkpoints/'superpoint_v1.pth')}}
+            lockfile=root/'runtime.json';atomic_json(lockfile,pins)
+            with mock.patch.dict(os.environ,{'TORCH_HOME':str(root)}):
+                self.assertEqual(_verify_ba_cache(lockfile),checkpoints)
+                (checkpoints/'aliked-n16.pth').write_bytes(b'tampered')
+                with self.assertRaises(WorkflowError):_verify_ba_cache(lockfile)
+
     def test_pycolmap_camera_model_api_variants(self):
         from bgs.data import _camera_model_name
         old=types.SimpleNamespace(model_name="PINHOLE")

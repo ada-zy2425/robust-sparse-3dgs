@@ -36,6 +36,26 @@ def _verified_dinov2_root(spec):
     return root
 
 
+def _verify_ba_cache(runtime_lock=None):
+    lock_path=Path(runtime_lock) if runtime_lock else Path(__file__).resolve().parents[1]/"vggt_runtime.lock.json"
+    pins=read_json(lock_path)
+    torch_home=os.environ.get("TORCH_HOME")
+    if not torch_home or not Path(torch_home).is_absolute():
+        raise WorkflowError("VGGT bundle adjustment requires an absolute TORCH_HOME")
+    checkpoints=Path(torch_home)/"hub"/"checkpoints"
+    required={
+        "vggsfm_v2_tracker.pt":pins["vggsfm_tracker"]["sha256"],
+        "dinov2_vitb14_reg4_pretrain.pth":pins["dinov2"]["checkpoint_sha256"],
+        "aliked-n16.pth":pins["aliked"]["sha256"],
+        "superpoint_v1.pth":pins["superpoint"]["sha256"],
+    }
+    for name,digest in required.items():
+        path=checkpoints/name
+        if not path.is_file() or file_hash(path)!=digest:
+            raise WorkflowError(f"VGGT BA cache missing or differs from runtime lock: {name}")
+    return checkpoints
+
+
 def _colmap_commands(spec, database, images, models):
     """Build explicit commands so the submitted config fixes CPU/GPU behavior."""
     exe=spec.get("colmap_binary","colmap")
@@ -85,6 +105,7 @@ def initialize(spec,manifest,prepared):
                    "--conf_thres_value",str(policy["confidence_threshold"])]
         if policy["bundle_adjustment"]:
             dinov2_root=_verified_dinov2_root(spec)
+            _verify_ba_cache()
             command=[spec.get("vggt_python",spec["python"]),"-m","bgs.vggt_wrapper",
                      "--demo",str(root/"demo_colmap.py"),"--dinov2-root",str(dinov2_root),
                      *demo_args,"--use_ba"]
