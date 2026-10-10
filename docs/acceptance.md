@@ -10,6 +10,7 @@ These gates separate a working engineering system from complete experimental evi
 - A localhost-only viewer was checked in a real WebGL browser: a calibrated default view rendered and a deterministic orbit drag changed the canvas; all viewer, browser and tunnel processes were then stopped.
 - Exact-source trainer patching and CPU contracts pass. Shape-changing resume is deliberately excluded because qualification failed; the first-divergence diagnosis is documented separately and does not relax the qualification tolerance.
 - A source-only archive of commit `c569b12` was extracted into a new directory and passed 41/41 tests, the pinned trainer source contract, real development-manifest hash verification and a queued 39-camera GPU render benchmark while reusing only the declared dependency/data/checkpoint caches.
+- A second clean archive of numerical-fix commit `3a4025e` passed 47/47 tests, compileall, the pinned source contract and real manifest verification. Its queued clean-source check read an existing new pre-BA checkpoint and rendered all 39 holdouts; this is explicitly not a from-scratch training reproduction.
 
 ## EVIDENCE_READY — PASS (scoped six-scene evidence)
 

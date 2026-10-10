@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "source_commit": "3a4025e00db85c4cfc0b61925b9bb46f01e7b4b1",
+  "source_materialization": "git archive into a previously absent clean directory",
+  "archive_sha256": "d5c79acc6f742c681c54dfbf101c1fd0f01974ffeaac3a53ac893986099a0c15",
+  "reused_read_only_resources": [
+    "pinned third_party dependency checkout",
+    "qualified gsplat environment and model caches",
+    "licensed development dataset",
+    "completed room pre-BA seed-42 checkpoint"
+  ],
+  "cpu_validation": {
+    "unittest": "47/47 PASS",
+    "compileall": "PASS",
+    "pinned_trainer_source_contract": "PASS",
+    "real_development_manifest_hash_check": "PASS"
+  },
+  "checkpoint_render_reproduction": {
+    "task_id": "bench_m360_room_dev_v24_vggt_ba_pre_s42_7k_floor_v1_mc_v103",
+    "status": "SUCCEEDED",
+    "exit_code": 0,
+    "gpu_hours": 0.005442364715660611,
+    "elapsed_s": 19.592512976378202,
+    "camera_count": 39,
+    "sample_count": 1170,
+    "num_gaussians": 668402,
+    "mean_ms": 2.017682184202549,
+    "p95_ms": 2.4788038805127144,
+    "fps_from_mean": 495.618193900657,
+    "peak_allocated_bytes": 713501696,
+    "checkpoint_sha256": "c48146d4bb1eab86c9bfad43e09ef98d34d5f023cb351ccd1c1527c226f973f4",
+    "config_sha256": "31af22173a31b6e8ad2368440a18d5f947747ccaad626048a30d78d4a0352624"
+  },
+  "boundary": "This validates clean-source tests, contracts, data access and read-only rendering of an existing checkpoint. It is not an independent from-scratch training reproduction.",
+  "historical_runs_mutated": false
+}

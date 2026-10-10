@@ -161,4 +161,6 @@ The clean tree needs access to the pinned `third_party/gsplat` checkout for the 
 
 This sequence was exercised from clean commit `c569b12`: 41/41 CPU tests, the pinned trainer contract and a real 24-view room manifest passed. The queued read-only GPU check then rendered all 39 hold-out cameras for 1,170 synchronized samples from the clean source tree at 1.837 ms mean / 2.230 ms p95, consuming 0.005094 GPU-hours. The sanitized command/exit/hash receipt is [clean reproduction validation v1](../reports/clean_reproduction_validation_v1.json).
 
+The numerical-fix delivery was independently re-exercised from clean commit `3a4025e`: 47/47 tests, compileall, the pinned trainer contract and the real room manifest passed. A queued read-only render then loaded the new 668,402-Gaussian room pre-BA checkpoint from the clean source tree and rendered all 39 holdouts / 1,170 samples at 2.018 ms mean / 2.479 ms p95 for 0.005442 GPU-hours. This is checkpoint render reproduction, not from-scratch training reproduction; see [clean reproduction validation floor v2](../reports/clean_reproduction_validation_floor_v2.json).
+
 The sanitized development CSV and performance JSON under `reports/` are examples of the expected receipts. Mip-NeRF 360 RGB, derived comparison panels/video, PLYs and VGGT weights remain private because redistribution/commercial terms are not established.
