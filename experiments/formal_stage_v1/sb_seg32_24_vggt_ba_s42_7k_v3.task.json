@@ -1,0 +1,32 @@
+{
+  "task_id": "sb_seg32_24_vggt_ba_s42_7k_v3",
+  "kind": "bgs_run",
+  "argv": [
+    "/srv/robust-sparse-3dgs/envs/gsplat/bin/python", "-m", "bgs", "run", "--config",
+    "/srv/robust-sparse-3dgs/configs/formal_stage_v1/sb_seg32_24_vggt_ba_s42_7k_v3.json"
+  ],
+  "cwd": "/srv/robust-sparse-3dgs",
+  "env": {
+    "PYTHONPATH": "/srv/robust-sparse-3dgs",
+    "TORCH_HOME": "/srv/robust-sparse-3dgs/cache/torch",
+    "TMPDIR": "/srv/robust-sparse-3dgs/tmp/formal/sb_seg32_24_vggt_ba_s42_7k_v3"
+  },
+  "dependencies": [],
+  "config_path": "/srv/robust-sparse-3dgs/configs/formal_stage_v1/sb_seg32_24_vggt_ba_s42_7k_v3.json",
+  "config_sha256": "a079fd8ca4b1170c2d4e6eb656516443757fcaea6ee504df44fdac1528619c23",
+  "gpu_index": 0,
+  "gpu_uuid": "GPU-REPLACE-WITH-QUALIFIED-UUID",
+  "gpu_count": 1,
+  "max_gpu_hours": 2.0,
+  "timeout_s": 7200,
+  "disk_reservation_bytes": 16106127360,
+  "expected_outputs": [
+    "/srv/robust-sparse-3dgs/work/formal_stage_v1/campaigns/sb_seg32_24_vggt_ba_s42_7k_v3/runs/sb_seg32_24_vggt_ba_s42_7k_v3/summary.json",
+    "/srv/robust-sparse-3dgs/work/formal_stage_v1/campaigns/sb_seg32_24_vggt_ba_s42_7k_v3/runs/sb_seg32_24_vggt_ba_s42_7k_v3/input/init_receipt.json",
+    "/srv/robust-sparse-3dgs/work/formal_stage_v1/campaigns/sb_seg32_24_vggt_ba_s42_7k_v3/runs/sb_seg32_24_vggt_ba_s42_7k_v3/training/model.ply",
+    "/srv/robust-sparse-3dgs/work/formal_stage_v1/campaigns/sb_seg32_24_vggt_ba_s42_7k_v3/runs/sb_seg32_24_vggt_ba_s42_7k_v3/training/milestones/step_00001000/metrics.json",
+    "/srv/robust-sparse-3dgs/work/formal_stage_v1/campaigns/sb_seg32_24_vggt_ba_s42_7k_v3/runs/sb_seg32_24_vggt_ba_s42_7k_v3/training/milestones/step_00003000/metrics.json",
+    "/srv/robust-sparse-3dgs/work/formal_stage_v1/campaigns/sb_seg32_24_vggt_ba_s42_7k_v3/runs/sb_seg32_24_vggt_ba_s42_7k_v3/training/milestones/step_00007000/metrics.json"
+  ],
+  "priority": 15
+}

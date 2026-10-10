@@ -1,0 +1,17 @@
+{
+  "gsplat": {
+    "url": "https://github.com/nerfstudio-project/gsplat.git",
+    "commit": "512d366b67073d77ca099ede742683c165dfc23b",
+    "files": {
+      "examples/simple_trainer.py": "56496f684cfc1ea737064ff228ef2acdb99c913041f99aa6fa23155487245764",
+      "examples/datasets/colmap.py": "db11bf00c16b3944e4841cd8ee21f55b1e3b47d9af8b9d15c8ba45bd071ed94d"
+    }
+  },
+  "vggt": {
+    "url": "https://github.com/facebookresearch/vggt.git",
+    "commit": "a288dd0f14786c93483e45524328726ab7b1b4ce",
+    "files": {
+      "demo_colmap.py": "c1aaebd123ad66ee85d46e6b629f1e02c8e60a897682fc2e9afcde65937818ce"
+    }
+  }
+}

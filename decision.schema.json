@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "action": {"type": "string", "enum": ["CONTINUE", "NEEDS_INPUT", "COMPLETE"]},
+    "observation": {"type": "string"},
+    "evidence_paths": {"type": "array", "items": {"type": "string"}},
+    "hypothesis": {"type": "string"},
+    "next_step": {"type": "string"},
+    "blocker": {"type": "string"}
+  },
+  "required": ["action", "observation", "evidence_paths", "hypothesis", "next_step", "blocker"]
+}
