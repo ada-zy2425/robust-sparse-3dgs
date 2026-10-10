@@ -1,17 +1,22 @@
-# Performance protocol
+# Performance protocol and results
 
-Report cold setup separately from initialization, optimization, milestone evaluation and final evaluation. For render-only timing, pre-place camera tensors on the GPU, warm up five times, synchronize, then time repeated renders. Record resolution, Gaussian count, SH degree, precision, GPU model, driver, PyTorch CUDA build, repetitions and peak allocated/reserved memory.
+Cold setup, initialization, optimization, milestone evaluation and final evaluation are reported separately. `scripts/benchmark_render.py` loads a completed checkpoint read-only, pre-places camera tensors on the GPU, visits every fixed held-out camera, performs five warmups per camera, synchronizes CUDA, then records 30 repetitions per camera. Its receipt contains resolution, Gaussian count, precision, GPU/driver/runtime versions, checkpoint/config hashes, latency distributions and peak memory. The queue refuses to overwrite evidence.
 
-The early diagnostic's single-camera FPS remains an integration measurement. `scripts/benchmark_render.py` is the formal path: it loads a completed workflow checkpoint read-only, visits every fixed held-out camera, performs per-camera warmups and synchronized repetitions, and records raw-camera distributions plus aggregate mean/p50/p90/p95 latency. It is accepted only through the shared-budget queue and refuses to overwrite evidence.
+The early single-camera FPS number is integration evidence only. The formal development results below all ran on A800-SXM4-80GB devices and include every held-out camera; tensors were resident on the GPU, so browser, network, metric and file-writing time are excluded.
 
-On the first formal scene, the separately scheduled 3k control used 220,795 Gaussians instead of 641,484, reduced PLY size from 151.4 MB to 52.1 MB, and reduced optimization time from 302.4 s to 118.7 s. LPIPS worsened from 0.3516 to 0.4633, so this remains a selectable quality/cost tradeoff.
-
-The queued multi-camera gate passed on one otherwise idle A800 GPU. Each result covers all 8 fixed held-out cameras, 5 warmups per camera and 30 synchronized repeats per camera (240 timed samples):
-
-| Checkpoint | Gaussians | Mean ms ↓ | p50 ms | p95 ms | FPS ↑ | Peak allocated MB ↓ |
+| Development checkpoint | Cameras / samples | Gaussians | Mean ms ↓ | p95 ms | FPS ↑ | Peak allocated MB ↓ |
 |---|---:|---:|---:|---:|---:|---:|
-| COLMAP 7k | 641,484 | 2.607 | 2.604 | 3.771 | 383.6 | 707.4 |
-| COLMAP 3k | 220,795 | **2.067** | **2.172** | **2.532** | **483.7** | **267.1** |
-| VGGT + official BA 7k | 684,451 | 2.752 | 2.778 | 3.767 | 363.4 | 747.6 |
+| bonsai VGGT no BA | 37 / 1,110 | 631,496 | 1.865 | 2.939 | 536.2 | 683.3 |
+| bonsai VGGT + official BA | 37 / 1,110 | 742,208 | 2.063 | 2.319 | 484.6 | 782.1 |
+| room 6-view VGGT no BA | 39 / 1,170 | 297,925 | 1.488 | 1.826 | 672.0 | 340.5 |
+| room 12-view VGGT no BA | 39 / 1,170 | 493,660 | 1.728 | 2.207 | 578.7 | 536.6 |
+| room 24-view VGGT no BA | 39 / 1,170 | 728,207 | 2.071 | 2.517 | 482.8 | 784.2 |
+| room 24-view VGGT + official BA | 39 / 1,170 | 546,566 | 1.842 | 2.228 | 542.9 | 586.5 |
+| garden 24-view COLMAP | 24 / 720 | 1,389,863 | 2.864 | 3.598 | 349.1 | 1,429.5 |
+| garden 24-view VGGT + official BA | 24 / 720 | 1,542,709 | 3.151 | 3.489 | 317.4 | 1,590.0 |
 
-Relative to COLMAP 7k, the 3k checkpoint reduced mean render latency by 20.7%, increased reciprocal-throughput FPS by 26.1%, and reduced peak allocated memory by 62.2%. These are render-only resident-tensor measurements, not viewer end-to-end latency, network performance, or a custom-kernel result. Machine-readable distributions and checkpoint/config hashes are under `reports/performance/`.
+Gaussian count is a practical latency and memory driver, but BA changes both cameras and the optimized model: it made room smaller/faster and bonsai and garden larger/slower. This is measured system behavior, not a custom CUDA-kernel claim.
+
+The earlier South Building 3k control remains a separate quality/cost example. It used 220,795 instead of 641,484 Gaussians, reduced optimization time from 302.4 to 118.7 seconds and PLY size from 151.4 to 52.1 MB. Its mean render latency fell from 2.607 to 2.067 ms and peak memory from 707.4 to 267.1 MB, but LPIPS worsened from 0.3516 to 0.4633. It is therefore a selectable schedule tradeoff rather than a universal optimization win.
+
+Machine-readable distributions and hashes are under `reports/performance/`. Viewer interaction has been browser-validated, but no browser end-to-end latency claim is made.

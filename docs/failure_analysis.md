@@ -4,7 +4,9 @@
 
 The first formal South Building sampling spanned two separated capture ranges. COLMAP registered only 3/12 and 5/24 views. A continuous 48-frame segment improved coverage to 6/12 and 15/24 but still left gaps after the camera baseline increased. These are retained results, not discarded setup noise.
 
-The next protocol froze a shorter segment using only ordered filenames and calibration-pose spacing before quality inspection. Its dense 24-view arm registered all views; its nested 12-view arm still failed. Current evidence therefore supports “insufficient overlap under the sparse selection” more strongly than a GPU, renderer or training fault.
+The next protocol froze a shorter segment using only ordered filenames and calibration-pose spacing before quality inspection. Its dense 24-view arm registered all views; its nested 12-view arm still failed.
+
+The three-scene Mip-NeRF 360 development matrix made this denominator explicit. Full coverage was obtained in only 1/9 COLMAP arms: bonsai registered 0/6, 2/12 and 23/24; room registered 0/6, 6/12 and 13/24; garden registered 2/6, 5/12 and 24/24. All partial models remain failures. This supports insufficient overlap and scene-dependent feature geometry under the fixed sparse selections more strongly than a GPU, renderer or trainer fault.
 
 ## Resume qualification
 
@@ -18,12 +20,18 @@ At fixed 24 training views, 8 held-out views, 7k schedule, resolution, seed and 
 
 The training-camera alignment diagnostic points more strongly to camera error than point count: VGGT's mean center residual was 0.0499 versus 0.00631 for COLMAP, and mean orientation error was 2.258° versus 0.145°.
 
-The official bundle-adjustment control supported that hypothesis on this scene. It reduced the center residual to 0.00475 and orientation error to 0.219°, gained 4.271 dB PSNR over no-BA, raised SSIM by 0.0889 and reduced LPIPS by 0.2457. It reached 16.878/0.3548/0.3189 versus COLMAP's 16.803/0.4274/0.3516, so the metrics remain mixed rather than establishing a universal winner.
+The official bundle-adjustment control supported that hypothesis on this scene. It reduced the center residual to 0.00475 and orientation error to 0.219°, gained 4.271 dB PSNR over no-BA, raised SSIM by 0.0889 and reduced LPIPS by 0.2457. It reached 16.878/0.3548/0.3189 versus COLMAP's 16.803/0.4274/0.3516, so the metrics remained mixed.
+
+The controlled 24-view development replication was more informative. Official BA produced valid full-coverage initializations on bonsai, room and garden. Relative to no-BA, it improved all three image metrics on bonsai and room. On garden, no-BA failed initialization; relative to the successful COLMAP arm, BA improved LPIPS by 0.0242 but reduced PSNR by 0.515 dB, reduced SSIM by 0.0280 and produced 152,846 more Gaussians. The supported conclusion is reliability plus scene-dependent image-quality behavior—not universal metric or performance superiority.
+
+The full development matrix completed 5/18 predeclared no-BA/COLMAP runs. VGGT no-BA succeeded on bonsai-24 and room-6/12/24, while it failed all garden view counts and bonsai-6/12 because too few points survived. Point count and initializer label alone therefore do not predict end-to-end success.
 
 Three dependency failures are preserved rather than rewritten: v1 lacked the VGGSfM tracker, v2 lacked offline DINOv2 source, and v3's first attempt lacked ALIKED. After exact cache qualification, unchanged v3 used its sole reasoned retry and completed. The successful retry also exposed and cached SuperPoint. BA is an upstream established technique; the project contribution here is controlled diagnosis, offline qualification and evidence accounting.
 
 ## Limits
 
-- Current scored evidence is from one development capture and cannot establish cross-scene generalization.
+- Development evidence covers three scenes and one seed per arm; it diagnoses repeatable behavior but is not a strong statistical generalization claim.
 - No ground-truth geometry is available, so PSNR/SSIM/LPIPS are image-space metrics only.
-- The South Building redistribution status has not been cleared; images and rendered assets remain private.
+- Mip-NeRF 360/South Building redistribution terms for derived presentation assets have not been resolved here; images, rendered panels, videos and PLYs remain private.
+- Possible overlap between VGGT pretraining and benchmark scenes is unknown.
+- Official BA is upstream established work. This project implements the controlled protocol, isolation, qualification and evidence accounting; it does not present BA as a new algorithm.

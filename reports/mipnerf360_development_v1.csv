@@ -1,0 +1,22 @@
+run_id,partition,scene,train_views,holdout_views,initializer,status,registered_views,initial_points,psnr,ssim,lpips,num_gaussians,gpu_hours,e2e_s,optimization_s,model_bytes,center_error_mean,orientation_error_degrees_mean,note
+m360_bonsai_dev_v06_colmap_s42_7k_v3,development,m360_bonsai_dev,6,37,colmap,FAILED,0/6,,,,,,0.010881147646448678,,,,,,no sparse model
+m360_bonsai_dev_v06_vggt_s42_7k_v3,development,m360_bonsai_dev,6,37,vggt,FAILED,6/6,0,,,,,0.045944375230206384,,,,,,too few initialization points
+m360_bonsai_dev_v12_colmap_s42_7k_v3,development,m360_bonsai_dev,12,37,colmap,FAILED,2/12,,,,,,0.01727351816991965,,,,,,partial registration retained
+m360_bonsai_dev_v12_vggt_s42_7k_v3,development,m360_bonsai_dev,12,37,vggt,FAILED,12/12,0,,,,,0.01935228594061401,,,,,,too few initialization points
+m360_bonsai_dev_v24_colmap_s42_7k_v3,development,m360_bonsai_dev,24,37,colmap,FAILED,23/24,,,,,,0.0768818466235987,,,,,,partial registration retained
+m360_bonsai_dev_v24_vggt_s42_7k_v3,development,m360_bonsai_dev,24,37,vggt,VALID,24/24,13,13.101883192320127,0.37125119687737645,0.6812956945316212,631496,0.4987691028995646,1795.5687704384327,1563.9848141036928,149034533,0.09756872492684739,1.5933973270292041,official no-BA baseline
+m360_room_dev_v06_colmap_s42_7k_v3,development,m360_room_dev,6,39,colmap,FAILED,0/6,,,,,,0.01024860855191946,,,,,,no sparse model
+m360_room_dev_v06_vggt_s42_7k_v3,development,m360_room_dev,6,39,vggt,VALID,6/6,100000,14.174514110271748,0.4245559860689518,0.48991955663913334,297925,0.6311264903222521,2272.0553651601076,1894.7739834673703,70311777,0.051017265810890465,0.70449334396136,official no-BA baseline
+m360_room_dev_v12_colmap_s42_7k_v3,development,m360_room_dev,12,39,colmap,FAILED,6/12,,,,,,0.022613796308740147,,,,,,partial registration retained
+m360_room_dev_v12_vggt_s42_7k_v3,development,m360_room_dev,12,39,vggt,VALID,12/12,100000,16.73848111812885,0.5447471670997448,0.3767314415711623,493660,0.5820814336458635,2095.4931611251086,1675.9048638064414,116505237,0.09154680406355409,0.6279412201361178,official no-BA baseline
+m360_room_dev_v24_colmap_s42_7k_v3,development,m360_room_dev,24,39,colmap,FAILED,13/24,,,,,,0.07528053003673753,,,,,,partial registration retained
+m360_room_dev_v24_vggt_s42_7k_v3,development,m360_room_dev,24,39,vggt,VALID,24/24,100000,17.61436071151342,0.5859214724638523,0.3355720570454231,728207,0.5116294706597303,1841.8660943750292,1595.4946069028229,171858329,0.07345250169905058,0.416178560201988,official no-BA baseline
+m360_garden_dev_v06_colmap_s42_7k_v3,development,m360_garden_dev,6,24,colmap,FAILED,2/6,,,,,,0.017031399143549304,,,,,,partial registration retained
+m360_garden_dev_v06_vggt_s42_7k_v3,development,m360_garden_dev,6,24,vggt,FAILED,6/6,0,,,,,0.01905596724245697,,,,,,too few initialization points
+m360_garden_dev_v12_colmap_s42_7k_v3,development,m360_garden_dev,12,24,colmap,FAILED,5/12,,,,,,0.031103652047200336,,,,,,partial registration retained
+m360_garden_dev_v12_vggt_s42_7k_v3,development,m360_garden_dev,12,24,vggt,FAILED,12/12,0,,,,,0.01964240147628718,,,,,,too few initialization points
+m360_garden_dev_v24_colmap_s42_7k_v3,development,m360_garden_dev,24,24,colmap,VALID,24/24,6883,20.12571366628011,0.4641964336236318,0.2736598812043667,1389863,1.2615770711610095,4541.677456179634,4254.274179888889,328009146,0.007163516082768349,0.07731949953840314,formal COLMAP baseline
+m360_garden_dev_v24_vggt_s42_7k_v3,development,m360_garden_dev,24,24,vggt,FAILED,24/24,0,,,,,0.018043368274552954,,,,,,too few initialization points
+m360_bonsai_dev_v24_vggt_ba_s42_7k_v2,development,m360_bonsai_dev,24,37,vggt+official-ba,VALID,24/24,22192,17.389973820866764,0.5020538560442023,0.34872450619130524,742208,0.51127283723404,1840.5822140425444,1570.0935353301466,175162565,0.029960698127002673,0.6656953442712803,one-factor upstream BA control
+m360_room_dev_v24_vggt_ba_s42_7k_v2,development,m360_room_dev,24,39,vggt+official-ba,VALID,24/24,36222,19.75599073752379,0.6656853533708132,0.2673966800555205,546566,0.517948019291895,1864.6128694508225,1562.6258060690016,128991053,0.05202229431968841,0.2999280062042994,one-factor upstream BA control
+m360_garden_dev_v24_vggt_ba_s42_7k_v2,development,m360_garden_dev,24,24,vggt+official-ba,VALID,24/24,26941,19.61086142063141,0.43620356172323227,0.24950056336820126,1542709,1.1421656216303302,4111.796237869188,3895.0201827343553,364080802,0.008606813293315047,0.07285927276518513,one-factor upstream BA control; mixed metric tradeoff
