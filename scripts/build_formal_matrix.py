@@ -14,6 +14,7 @@ def main():
     p.add_argument("--registry",required=True)
     p.add_argument("--gpu",action="append",required=True,help="INDEX:GPU-UUID; repeat up to four times")
     p.add_argument("--steps",type=int,default=7000)
+    p.add_argument("--revision",type=int,default=1)
     p.add_argument("--max-gpu-hours",type=float,default=1.5)
     p.add_argument("--timeout-s",type=int,default=5400)
     args=p.parse_args()
@@ -33,11 +34,16 @@ def main():
         raise WorkflowError("Provide one to four unique GPU UUID mappings")
     if args.steps!=7000:
         raise WorkflowError("Formal v1 matrix fixes a predeclared 7000-step total schedule")
-    if args.timeout_s/3600>args.max_gpu_hours:
-        raise WorkflowError("timeout exceeds task GPU-hour reservation")
+    if args.revision<1:
+        raise WorkflowError("revision must be a positive integer")
+    # The inner bounded runner reserves timeout plus a five-second process
+    # cleanup window.  Reject matrices that could only fail before launch.
+    if (args.timeout_s+5)/3600>args.max_gpu_hours:
+        raise WorkflowError("timeout plus cleanup window exceeds task GPU-hour reservation")
 
-    configs=root/"configs"/"mipnerf360_dev_v1"
-    tasks=root/"remote_tasks"/"mipnerf360_dev_v1"
+    matrix_tag=f"mipnerf360_dev_v{args.revision}"
+    configs=root/"configs"/matrix_tag
+    tasks=root/"remote_tasks"/matrix_tag
     configs.mkdir(parents=True,exist_ok=True);tasks.mkdir(parents=True,exist_ok=True)
     created=[];assignment=0
     for scene in scenes:
@@ -50,12 +56,12 @@ def main():
             if record.get("scene_id")!=scene_id or record.get("partition")!="development" or len(record.get("train",[]))!=views:
                 raise WorkflowError(f"Manifest contract mismatch: {manifest}")
             for initializer in ("colmap","vggt"):
-                run_id=f"{scene_id}_v{views:02d}_{initializer}_s42_7k_v1"
+                run_id=f"{scene_id}_v{views:02d}_{initializer}_s42_7k_v{args.revision}"
                 config_path=configs/f"{run_id}.json";task_path=tasks/f"{run_id}.json"
                 if config_path.exists() or task_path.exists():
                     raise WorkflowError(f"Refusing to overwrite immutable matrix entry: {run_id}")
                 gpu_index,gpu_uuid=gpus[assignment%len(gpus)];assignment+=1
-                campaign=root/"work"/"mipnerf360_dev_v1"/"campaigns"/run_id
+                campaign=root/"work"/matrix_tag/"campaigns"/run_id
                 spec={"run_id":run_id,"root":str(campaign),"manifest":str(manifest),
                       "gsplat_root":str(root/"third_party"/"gsplat"),
                       "python":str(root/"envs"/"gsplat"/"bin"/"python"),
@@ -81,7 +87,7 @@ def main():
                 task={"task_id":run_id,"kind":"bgs_run",
                       "argv":[str(root/"envs"/"gsplat"/"bin"/"python"),"-m","bgs","run","--config",str(config_path)],
                       "cwd":str(root),"env":{"PYTHONPATH":str(root),"TORCH_HOME":str(root/"cache"/"torch"),
-                      "TMPDIR":str(root/"tmp"/"mipnerf360_dev_v1"/run_id)},"dependencies":[],
+                      "TMPDIR":str(root/"tmp"/matrix_tag/run_id)},"dependencies":[],
                       "config_path":str(config_path),"config_sha256":file_hash(config_path),
                       "gpu_index":gpu_index,"gpu_uuid":gpu_uuid,"gpu_count":1,
                       "max_gpu_hours":args.max_gpu_hours,"timeout_s":args.timeout_s,
@@ -89,7 +95,7 @@ def main():
                       "priority":20+views+(0 if initializer=="colmap" else 1)}
                 atomic_json(task_path,task);created.append({"run_id":run_id,"config":str(config_path),"task":str(task_path)})
     receipt={"schema":1,"registry":str(registry_path),"registry_sha256":file_hash(registry_path),
-             "steps":7000,"seed":42,"max_edge":1024,"tasks":created}
+             "revision":args.revision,"steps":7000,"seed":42,"max_edge":1024,"tasks":created}
     receipt_path=tasks/"matrix_receipt.json"
     if receipt_path.exists():raise WorkflowError("Matrix receipt already exists")
     atomic_json(receipt_path,receipt)
