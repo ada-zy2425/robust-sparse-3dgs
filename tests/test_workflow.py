@@ -352,5 +352,43 @@ class GeometryTests(unittest.TestCase):
         for r in result[:,:3,:3]:np.testing.assert_allclose(r@r.T,np.eye(3),atol=1e-12)
         np.testing.assert_array_equal(result,perturb_training_poses(poses,17,3.,.01))
 
+    def test_pose_perturbation_zero_is_exact_and_does_not_alias(self):
+        import numpy as np
+        from bgs.geometry import perturb_training_poses
+        poses=np.repeat(np.eye(4)[None],5,axis=0)
+        poses[:,:3,3]=np.arange(15,dtype=float).reshape(5,3)
+        original=poses.copy();result=perturb_training_poses(poses,1729,0.,0.)
+        np.testing.assert_array_equal(result,original)
+        self.assertFalse(np.shares_memory(result,poses))
+        result[1,0,3]+=1
+        np.testing.assert_array_equal(poses,original)
+
+    def test_pose_perturbation_levels_share_directions_and_exact_magnitudes(self):
+        import numpy as np
+        from bgs.geometry import perturb_training_poses,rotation_error_degrees
+        poses=np.repeat(np.eye(4)[None],6,axis=0)
+        poses[:,:3,3]=[[0,0,0],[2,0,0],[0,3,0],[0,0,4],[-1,-2,0],[1,1,-2]]
+        radius=np.linalg.norm(poses[:,:3,3]-poses[:,:3,3].mean(0),axis=1).max()
+        r05=perturb_training_poses(poses,1729,.5,0.)
+        r10=perturb_training_poses(poses,1729,1.,0.)
+        t05=perturb_training_poses(poses,1729,0.,.005)
+        t10=perturb_training_poses(poses,1729,0.,.01)
+        for i in range(1,len(poses)):
+            self.assertAlmostEqual(rotation_error_degrees(r05[i,:3,:3],poses[i,:3,:3]),.5,places=10)
+            self.assertAlmostEqual(rotation_error_degrees(r10[i,:3,:3],poses[i,:3,:3]),1.,places=10)
+            delta05=r05[i,:3,:3]@poses[i,:3,:3].T
+            delta10=r10[i,:3,:3]@poses[i,:3,:3].T
+            np.testing.assert_allclose(delta10,delta05@delta05,atol=2e-15)
+            np.testing.assert_allclose(t10[i,:3,3]-poses[i,:3,3],
+                                       2*(t05[i,:3,3]-poses[i,:3,3]),atol=2e-15)
+            self.assertAlmostEqual(np.linalg.norm(t05[i,:3,3]-poses[i,:3,3]),.005*radius,places=12)
+            self.assertAlmostEqual(np.linalg.norm(t10[i,:3,3]-poses[i,:3,3]),.01*radius,places=12)
+            self.assertAlmostEqual(np.linalg.det(r10[i,:3,:3]),1.,places=12)
+        np.testing.assert_array_equal(r05[:,:3,3],poses[:,:3,3])
+        np.testing.assert_array_equal(r10[:,:3,3],poses[:,:3,3])
+        np.testing.assert_array_equal(t05[:,:3,:3],poses[:,:3,:3])
+        np.testing.assert_array_equal(t10[:,:3,:3],poses[:,:3,:3])
+        for result in (r05,r10,t05,t10):np.testing.assert_array_equal(result[0],poses[0])
+
 
 if __name__=='__main__':unittest.main()

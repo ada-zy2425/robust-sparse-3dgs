@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "protocol_id": "pose_sensitivity_v1",
+  "frozen_date": "2026-10-11",
+  "scope": "Controlled sensitivity to errors added to existing estimated training poses on development scenes only",
+  "scenes": [
+    "bonsai",
+    "room"
+  ],
+  "partition": "development",
+  "train_views": 24,
+  "holdout_policy": "Existing immutable mipnerf360_dev_v1 holdout split",
+  "showcase_holdouts": {
+    "bonsai": "DSCF5565.JPG",
+    "room": "DSCF4667.JPG"
+  },
+  "fixed": {
+    "initialization": "Immutable seed-42 post-BA reconstruction pair used by ba_operation_ablation_floor_v1",
+    "splat_numerics_policy": "dtype_scene_scale_floor_v1",
+    "max_edge": 1024,
+    "steps": 7000,
+    "training_seed": 42,
+    "noise_seed": 1729,
+    "pose_optimization": false,
+    "initial_points_intrinsics_rgb_holdout_cameras": "unchanged",
+    "alignment": "Fit from unperturbed training cameras before applying noise; never refit after perturbation"
+  },
+  "conditions": [
+    {
+      "id": "zero",
+      "rotation_degrees": 0.0,
+      "translation_fraction": 0.0
+    },
+    {
+      "id": "r05",
+      "rotation_degrees": 0.5,
+      "translation_fraction": 0.0
+    },
+    {
+      "id": "r10",
+      "rotation_degrees": 1.0,
+      "translation_fraction": 0.0
+    },
+    {
+      "id": "t005",
+      "rotation_degrees": 0.0,
+      "translation_fraction": 0.005
+    },
+    {
+      "id": "t010",
+      "rotation_degrees": 0.0,
+      "translation_fraction": 0.01
+    }
+  ],
+  "camera_radius_definition": "Maximum Euclidean distance from a training camera center to the arithmetic mean of all 24 unperturbed training camera centers, in the normalized model frame",
+  "rotation_convention": "For each non-anchor camera, left-multiply its camera-to-world rotation by a fixed-angle Rodrigues rotation about a noise-seed-determined axis in the model/world frame; camera center is unchanged",
+  "translation_convention": "For each non-anchor camera, add a noise-seed-determined unit vector in the model/world frame times translation_fraction times camera_radius; orientation is unchanged",
+  "anchor": "Training camera at parser index 0 is unchanged; expected names are DSCF5566.JPG for bonsai and DSCF4668.JPG for room",
+  "direction_pairing": "Within each modality, both nonzero levels use noise_seed 1729 and therefore share per-camera axes/directions; only magnitude changes",
+  "zero_reuse_rule": "Reuse only if snapshot, training fields, source behavior and evaluation protocol match; record immutable identity and hashes in the matrix receipt",
+  "primary_metrics": [
+    "heldout_psnr",
+    "heldout_ssim",
+    "heldout_lpips"
+  ],
+  "secondary_metrics": [
+    "training_seconds",
+    "queue_gpu_hours",
+    "peak_allocated_bytes",
+    "num_gaussians",
+    "model_bytes"
+  ],
+  "interpretation_limits": [
+    "This is sensitivity to controlled errors added to estimated poses, not known absolute pose error",
+    "There is no geometry ground truth, so no geometry accuracy is reported",
+    "One training seed and one noise-direction set do not support strong statistical generalization",
+    "The protocol is development-only and does not reopen final_v1"
+  ],
+  "stopping_rule": "Run exactly the frozen matrix within the authorized budget; do not change levels for monotonicity and stop after report and delivery validation"
+}
