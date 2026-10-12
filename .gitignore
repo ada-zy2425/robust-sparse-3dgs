@@ -16,3 +16,6 @@ checkpoints/
 *.zip
 *.tar*
 *.log
+
+# Sanitized historical evidence bundle (no RGB, weights or models).
+!reports/archive.zip

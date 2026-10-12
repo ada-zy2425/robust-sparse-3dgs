@@ -1,60 +1,36 @@
 # Robust Sparse 3DGS
 
-**Sparse-view reconstruction, failure diagnosis, and controlled geometric experiments.**
+**Sparse-view reconstruction · numerical stability · controlled geometry experiments**
 
-I built a COLMAP / VGGT → pinned gsplat workflow, then investigated why sparse-view initialization fails and how camera geometry affects held-out rendering. The emphasis is **root-cause diagnosis and matched experiments**, with reproducible evidence and explicit limits.
+A COLMAP / VGGT → gsplat workflow for training, held-out rendering, PLY export and local WebGL inspection.
 
-[中文项目报告](docs/project_report_zh.md) · [Personal contributions](docs/reference/contributions.md) · [Reproduction](docs/reproduction.md) · [Experiment index](reports/README.md)
+[中文报告](docs/project_report_zh.md) · [Reproduce](docs/reproduction.md) · [Evidence](reports/README.md)
 
-![Initialization failure and controlled repair](docs/figures/initialization.svg)
+![System overview and initialization repair — schematic, not a reconstruction image](docs/figures/initialization.svg)
 
-## Three findings to start with
+## Measured results
 
-| Contribution | Evidence | What it demonstrates |
-|---|---|---|
-| **Locate and repair initialization failure** | Duplicate-point neighborhoods caused zero scales before the first forward pass. A shared dtype/scene-scale floor changed only 4 / 8 degenerate scales in bonsai / room, preserving points and colors. | Failure localization, numerical reasoning, and a controlled repair. |
-| **Measure a matched BA operation** | Held-out PSNR improved **+1.591–2.166 dB** across two scenes and two training seeds; SSIM and LPIPS improved in every pair. | Paired controls and attribution of the joint camera/point operation. |
-| **Isolate sensitivity to training poses** | With fixed initialization points, 1° rotation cost **0.910 / 3.198 dB** on bonsai / room. | Separation of pose perturbation from point-cloud changes. |
+![Matched BA: gains across two scenes and two training seeds](docs/figures/ba_gain.svg)
 
-![Matched BA gains on two scenes and two training seeds](docs/figures/ba_gain.svg)
+**+1.591–2.166 dB PSNR**, with SSIM and LPIPS improving in all four pairs. Shared initialization snapshots and numerical guard; this measures joint camera/point BA, with training randomness repeated.
 
-Two seeds reuse the same immutable initialization snapshots: this repeats **training randomness**, not independent initialization. BA jointly changes cameras and points; its gain is not a camera-only effect.
+![Pose sensitivity with fixed points and held-out cameras](docs/figures/pose_sensitivity.svg)
 
-![Controlled rotation and translation sensitivity](docs/figures/pose_sensitivity.svg)
+**1° rotation: −0.910 / −3.198 dB** on bonsai / room. Fixed points, intrinsics, RGB and alignment; two development scenes, one training seed and one noise draw.
 
-The sensitivity study uses two development scenes, one training seed and one noise-direction set. Added errors are relative to estimated poses; this does not measure absolute pose error or geometry accuracy.
+## Where to look
 
-## System and delivery
-
-Train-only staging and immutable splits → COLMAP / VGGT initialization → finite-state checks → bounded gsplat training → calibrated held-out evaluation → PLY export and local WebGL inspection.
-
-Implemented here: data/split integrity, pinned trainer contracts, budgeted experiment queue, matched BA snapshots, numerical diagnostics, pose perturbation controls, evaluation/export and render benchmarking. Upstream models, BA, rasterization and densification are reused; see [provenance](docs/reference/contributions.md).
-
-**Quality / cost tradeoff:** on one South Building scene, 3k versus 7k training reduced optimization time by 60.8% and PLY size by 65.6%, while LPIPS worsened (0.4633 versus 0.3516). See [performance evidence](docs/reference/performance.md).
-
-**Visual outputs:** a real local WebGL interaction and a private 39.97-second reference / prediction / error video were validated. Benchmark-derived RGB/video are excluded from this public repository pending redistribution review. The charts above are measured evidence, not reconstruction images. See [demo record](docs/reference/demo.md).
-
-## Repository map
-
-| Directory | Responsibility | Start here |
-|---|---|---|
-| `docs/` | Main report and reproduction; details in `reference/` | [Project report](docs/project_report_zh.md) |
-| `reports/` | Evidence index; raw receipts in `evidence/` | [Evidence index](reports/README.md) |
-| `bgs/` | Runtime: staging, initialization, training, queue | [Architecture](docs/reference/architecture.md) |
-| `scripts/` | Tools grouped by setup / experiments / diagnostics / evaluation / presentation | [Tool map](scripts/README.md) |
-| `configs/` | Run configuration and frozen experiment declarations | [Example](configs/run.example.json) |
-| `tests/` | Workflow and numerical contracts | `python -m unittest discover -s tests -v` |
-
-## Quick checks
+| Path | Purpose |
+|---|---|
+| [`docs/`](docs/project_report_zh.md) | Three documents: report, reproduction, technical notes |
+| [`reports/`](reports/README.md) | Current results + one historical archive |
+| `bgs/` | Runtime implementation |
+| [`scripts/`](docs/reproduction.md#tool-map) | Experiment / evaluation / figure tools; setup and diagnostics |
+| `configs/`, `protocols/`, `tests/` | Inputs, frozen contracts and validation |
 
 ```bash
 python -m unittest discover -s tests -v
-python -m bgs --help
-python -m bgs.queue --help
+python scripts/report.py --verify
 ```
 
-Optional chart regeneration (requires matplotlib): `python scripts/presentation/build_presentation_figures.py`.
-
-## Current boundaries
-
-Production resume has **not passed** the cross-densification qualification. Scene coverage and quality are initializer dependent. No new BA / pose-estimation algorithm, SOTA result, or geometric-ground-truth accuracy is claimed. VGGT-1B checkpoint licensing and potential benchmark pretraining overlap must be considered; weights are not distributed. See [third-party notices](THIRD_PARTY_NOTICES.md).
+[Methods, provenance and limits](docs/technical_notes.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
