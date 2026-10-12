@@ -16,4 +16,4 @@ Measured pose-sensitivity addition: 8/8 new 7k runs succeeded once for 3.987086 
 
 Explicit exclusions: public hosting, public RGB/PLY/checkpoint redistribution, commercial VGGT rights, geometry accuracy, SOTA claims, custom CUDA, self-authored BA, production-qualified resume and an independently new robustness algorithm.
 
-Primary entry points: [`../industrial_delivery_zh.md`](../industrial_delivery_zh.md), [`../../reports/experiment_index.md`](../../reports/experiment_index.md), [`../../reports/pose_sensitivity_v1/analysis.md`](../../reports/pose_sensitivity_v1/analysis.md), [`../reproduction.md`](../reproduction.md), and [`../demo.md`](../demo.md).
+Primary entry points: [`../industrial_delivery_zh.md`](../reference/industrial_delivery_zh.md), [`../../reports/README.md`](../../reports/README.md), [`../../reports/evidence/pose_sensitivity_v1/analysis.md`](../../reports/evidence/pose_sensitivity_v1/analysis.md), [`../reproduction.md`](../reproduction.md), and [`../demo.md`](../reference/demo.md).

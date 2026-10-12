@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 
-SCRIPT = Path(__file__).parents[1] / "scripts" / "collect_final_results.py"
+SCRIPT = Path(__file__).parents[1] / "scripts" / "evaluation" / "collect_final_results.py"
 SPEC = importlib.util.spec_from_file_location("collect_final_results", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None

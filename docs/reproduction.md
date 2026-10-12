@@ -23,7 +23,7 @@ df -h "$OUTPUT_ROOT"
 
 Copy the selected idle device's index and UUID from that same `nvidia-smi` output into `GPU_INDEX` and `GPU_UUID`; every queued task binds both values and refuses a changed mapping.
 
-`upstream.lock.json` and `vggt_runtime.lock.json` contain the qualified source and dependency hashes. For a new checkout, populate the pinned source directories with `python scripts/setup_upstream.py --destination third_party`; obtain the VGGT checkpoint from its official source and verify the recorded hash/license. The gsplat and VGGT environments remain separate.
+`upstream.lock.json` and `vggt_runtime.lock.json` contain the qualified source and dependency hashes. For a new checkout, populate the pinned source directories with `python scripts/setup/setup_upstream.py --destination third_party`; obtain the VGGT checkpoint from its official source and verify the recorded hash/license. The gsplat and VGGT environments remain separate.
 
 ## 2. Prepare a calibrated development scene
 
@@ -93,7 +93,7 @@ export GPU0_UUID=GPU-REPLACE_FROM_NVIDIA_SMI
 export GPU1_UUID=GPU-REPLACE_FROM_NVIDIA_SMI
 export GPU2_UUID=GPU-REPLACE_FROM_NVIDIA_SMI
 export GPU3_UUID=GPU-REPLACE_FROM_NVIDIA_SMI
-"$GSPLAT_PY" scripts/build_ba_operation_ablation.py \
+"$GSPLAT_PY" scripts/experiments/build_ba_operation_ablation.py \
   --root "$PROJECT_ROOT" --revision floor_v1 --seed 42 \
   --reuse-pair-revision v1 --pair-seed 42 \
   --splat-numerics-policy dtype_scene_scale_floor_v1 \
@@ -114,13 +114,13 @@ export ROUND_START_CHARGED=16.6173136333966
 export POSE_MATRIX="$PROJECT_ROOT/remote_tasks/pose_sensitivity_v1/matrix_receipt.json"
 export POSE_PROBE="$PROJECT_ROOT/work/pose_sensitivity_v1/pose_effect_probe.json"
 
-"$GSPLAT_PY" scripts/build_pose_sensitivity.py \
+"$GSPLAT_PY" scripts/experiments/build_pose_sensitivity.py \
   --root "$PROJECT_ROOT" --revision v1 \
   --gpu-uuids "$GPU0_UUID" "$GPU1_UUID" "$GPU2_UUID" "$GPU3_UUID" \
   --round-start-charged "$ROUND_START_CHARGED" \
   --round-cap-gpu-hours 5 --max-gpu-hours 0.6 --timeout-s 2100
 
-CUDA_VISIBLE_DEVICES="" "$GSPLAT_PY" scripts/probe_pose_perturbation.py \
+CUDA_VISIBLE_DEVICES="" "$GSPLAT_PY" scripts/diagnostics/probe_pose_perturbation.py \
   --root "$PROJECT_ROOT" --matrix "$POSE_MATRIX" --out "$POSE_PROBE"
 
 for TASK in "$PROJECT_ROOT"/remote_tasks/pose_sensitivity_v1/*.task.json; do
@@ -129,19 +129,19 @@ done
 "$GSPLAT_PY" -m bgs.queue run \
   --state "$QUEUE_STATE" --poll-s 5 --max-runtime-s 5000
 
-"$GSPLAT_PY" scripts/collect_pose_sensitivity.py \
+"$GSPLAT_PY" scripts/evaluation/collect_pose_sensitivity.py \
   --root "$PROJECT_ROOT" --matrix "$POSE_MATRIX" --probe "$POSE_PROBE" \
   --out-dir "$PROJECT_ROOT/reports/pose_sensitivity_v1"
 ```
 
-The builder first verifies that the queue is idle and that eight task reservations fit both the 24 GPUh ledger and the separately authorized 5 GPUh round cap. The CPU probe instantiates the pinned gsplat `Parser`/`Dataset`, checks all 24 actual training samples, shared noise directions, exact displacement/rotation, orthogonality, anchor, RGB and intrinsics before any task is added. The exercised matrix completed 8/8 tasks once for 3.987086 GPUh. The report is [pose sensitivity v1](../reports/pose_sensitivity_v1/analysis.md).
+The builder first verifies that the queue is idle and that eight task reservations fit both the 24 GPUh ledger and the separately authorized 5 GPUh round cap. The CPU probe instantiates the pinned gsplat `Parser`/`Dataset`, checks all 24 actual training samples, shared noise directions, exact displacement/rotation, orthogonality, anchor, RGB and intrinsics before any task is added. The exercised matrix completed 8/8 tasks once for 3.987086 GPUh. The report is [pose sensitivity v1](../reports/evidence/pose_sensitivity_v1/analysis.md).
 
 ## 6. Evaluation and performance
 
 Every successful `bgs run` writes `summary.json`, `training/metrics.json`, per-view comparison canvases, milestone metrics, `model.ply`, checkpoint/progress receipts and `report.html`. Validate that the metric image names exactly equal the manifest hold-out names.
 
 ```bash
-"$GSPLAT_PY" scripts/benchmark_render.py \
+"$GSPLAT_PY" scripts/evaluation/benchmark_render.py \
   --config "$OUTPUT_ROOT/scene_dev_v24_colmap_s42_7k_v1.json" \
   --out "$OUTPUT_ROOT/scene_dev_v24_colmap_s42_7k_v1.render.json" \
   --warmup 5 --repeats 30 --max-cameras 64
@@ -149,7 +149,7 @@ Every successful `bgs run` writes `summary.json`, `training/metrics.json`, per-v
 
 The benchmark is render-only: device-resident inputs, CUDA synchronization, every fixed hold-out camera, five warmups and 30 repeats. Report initialization, optimization, evaluation and end-to-end time separately from render latency. Report PLY bytes, Gaussian count and peak allocated memory with image resolution, GPU model and software revisions.
 
-For a final partition, first freeze scene IDs, run IDs, code/config hashes and evaluation rules with `scripts/freeze_final_protocol.py`. Build only the declared matrix with `scripts/build_final_matrix.py`; `scripts/collect_final_results.py` refuses incomplete matrices and retains failed rows. Never use final-scene scores to change parameters or select endpoints.
+For a final partition, first freeze scene IDs, run IDs, code/config hashes and evaluation rules with `scripts/experiments/freeze_final_protocol.py`. Build only the declared matrix with `scripts/experiments/build_final_matrix.py`; `scripts/evaluation/collect_final_results.py` refuses incomplete matrices and retains failed rows. Never use final-scene scores to change parameters or select endpoints.
 
 ## 7. Local-only viewer
 
@@ -166,7 +166,7 @@ For the delivered private room demo, the exercised checkpoint identity is the ze
   --config "$PROJECT_ROOT/configs/ba_operation_ablation_floor_v1/m360_room_dev_v24_vggt_ba_post_s42_7k_floor_v1.json"
 ```
 
-Its private static held-out report is under the matching run's `report.html`. Pose-sensitivity fixed panels are listed in `reports/pose_sensitivity_v1/results.json`; benchmark RGB and derived panels remain outside Git.
+Its private static held-out report is under the matching run's `report.html`. Pose-sensitivity fixed panels are listed in `reports/evidence/pose_sensitivity_v1/results.json`; benchmark RGB and derived panels remain outside Git.
 
 ## 8. Clean-source validation boundary
 
@@ -188,7 +188,7 @@ PYTHONPATH="$CLEAN_ROOT" "$GSPLAT_PY" -c \
   'import sys; from bgs.core import read_json; from bgs.data import verify_inputs; verify_inputs(read_json(sys.argv[1])); print("manifest OK")' \
   "$REAL_MANIFEST"
 
-PYTHONPATH="$CLEAN_ROOT" "$GSPLAT_PY" scripts/build_render_benchmark_task.py \
+PYTHONPATH="$CLEAN_ROOT" "$GSPLAT_PY" scripts/experiments/build_render_benchmark_task.py \
   --project-root "$PROJECT_ROOT" --source-root "$CLEAN_ROOT" \
   --config "$COMPLETED_CONFIG" --gpu "$GPU_INDEX:$GPU_UUID" \
   --out-dir "$OUTPUT_ROOT/clean-validation-tasks" --revision 99
@@ -199,8 +199,8 @@ PYTHONPATH="$CLEAN_ROOT" "$GSPLAT_PY" scripts/build_render_benchmark_task.py \
 
 The clean tree needs access to the pinned `third_party/gsplat` checkout for the source-contract line; in the verified deployment it was linked read-only from the qualified dependency cache. Record the clean commit, commands and exit codes. This validates code/document reproducibility while keeping historical run identities immutable; it does not pretend that an existing checkpoint was retrained.
 
-This sequence was exercised from clean commit `c569b12`: 41/41 CPU tests, the pinned trainer contract and a real 24-view room manifest passed. The queued read-only GPU check then rendered all 39 hold-out cameras for 1,170 synchronized samples from the clean source tree at 1.837 ms mean / 2.230 ms p95, consuming 0.005094 GPU-hours. The sanitized command/exit/hash receipt is [clean reproduction validation v1](../reports/clean_reproduction_validation_v1.json).
+This sequence was exercised from clean commit `c569b12`: 41/41 CPU tests, the pinned trainer contract and a real 24-view room manifest passed. The queued read-only GPU check then rendered all 39 hold-out cameras for 1,170 synchronized samples from the clean source tree at 1.837 ms mean / 2.230 ms p95, consuming 0.005094 GPU-hours. The sanitized command/exit/hash receipt is [clean reproduction validation v1](../reports/evidence/clean_reproduction_validation_v1.json).
 
-The numerical-fix delivery was independently re-exercised from clean commit `3a4025e`: 47/47 tests, compileall, the pinned trainer contract and the real room manifest passed. A queued read-only render then loaded the new 668,402-Gaussian room pre-BA checkpoint from the clean source tree and rendered all 39 holdouts / 1,170 samples at 2.018 ms mean / 2.479 ms p95 for 0.005442 GPU-hours. This is checkpoint render reproduction, not from-scratch training reproduction; see [clean reproduction validation floor v2](../reports/clean_reproduction_validation_floor_v2.json).
+The numerical-fix delivery was independently re-exercised from clean commit `3a4025e`: 47/47 tests, compileall, the pinned trainer contract and the real room manifest passed. A queued read-only render then loaded the new 668,402-Gaussian room pre-BA checkpoint from the clean source tree and rendered all 39 holdouts / 1,170 samples at 2.018 ms mean / 2.479 ms p95 for 0.005442 GPU-hours. This is checkpoint render reproduction, not from-scratch training reproduction; see [clean reproduction validation floor v2](../reports/evidence/clean_reproduction_validation_floor_v2.json).
 
 The sanitized development CSV and performance JSON under `reports/` are examples of the expected receipts. Mip-NeRF 360 RGB, derived comparison panels/video, PLYs and VGGT weights remain private because redistribution/commercial terms are not established.

@@ -192,19 +192,19 @@ class SplitTests(unittest.TestCase):
         self.assertAlmostEqual(camera.fov,fov)
 
     def test_resume_qualification_keeps_outer_gpu_assignment(self):
-        from scripts.qualify_resume import selected_visible_device
+        from scripts.diagnostics.qualify_resume import selected_visible_device
         with mock.patch.dict(os.environ,{'CUDA_VISIBLE_DEVICES':'3'}):
             self.assertEqual(selected_visible_device({'gpu':'0'}),'3')
 
     def test_resume_trace_does_not_compare_stale_previous_step_locals(self):
-        from scripts.qualify_resume import _trace_local_names
+        from scripts.diagnostics.qualify_resume import _trace_local_names
         self.assertEqual(_trace_local_names('sample'),['image_ids'])
         self.assertNotIn('loss',_trace_local_names('forward'))
         self.assertIn('loss',_trace_local_names('backward'))
 
     def test_resume_trace_ignores_only_culled_projected_means(self):
         import torch
-        from scripts.qualify_resume import _compare_tree,_semantic_trace_record
+        from scripts.diagnostics.qualify_resume import _compare_tree,_semantic_trace_record
         left={'renders':torch.ones(1),'render_info':{
               'radii':torch.tensor([[2,0]]),'means2d':torch.tensor([[[1.,2.],[9.,9.]]])}}
         right={'renders':torch.ones(1),'render_info':{

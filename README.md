@@ -4,7 +4,7 @@
 
 I built a COLMAP / VGGT → pinned gsplat workflow, then investigated why sparse-view initialization fails and how camera geometry affects held-out rendering. The emphasis is **root-cause diagnosis and matched experiments**, with reproducible evidence and explicit limits.
 
-[中文项目报告](docs/project_report_zh.md) · [Personal contributions](docs/contributions.md) · [Reproduction](docs/reproduction.md) · [Experiment index](reports/experiment_index.md)
+[中文项目报告](docs/project_report_zh.md) · [Personal contributions](docs/reference/contributions.md) · [Reproduction](docs/reproduction.md) · [Experiment index](reports/README.md)
 
 ![Initialization failure and controlled repair](docs/figures/initialization.svg)
 
@@ -28,21 +28,22 @@ The sensitivity study uses two development scenes, one training seed and one noi
 
 Train-only staging and immutable splits → COLMAP / VGGT initialization → finite-state checks → bounded gsplat training → calibrated held-out evaluation → PLY export and local WebGL inspection.
 
-Implemented here: data/split integrity, pinned trainer contracts, budgeted experiment queue, matched BA snapshots, numerical diagnostics, pose perturbation controls, evaluation/export and render benchmarking. Upstream models, BA, rasterization and densification are reused; see [provenance](docs/contributions.md).
+Implemented here: data/split integrity, pinned trainer contracts, budgeted experiment queue, matched BA snapshots, numerical diagnostics, pose perturbation controls, evaluation/export and render benchmarking. Upstream models, BA, rasterization and densification are reused; see [provenance](docs/reference/contributions.md).
 
-**Quality / cost tradeoff:** on one South Building scene, 3k versus 7k training reduced optimization time by 60.8% and PLY size by 65.6%, while LPIPS worsened (0.4633 versus 0.3516). See [performance evidence](docs/performance.md).
+**Quality / cost tradeoff:** on one South Building scene, 3k versus 7k training reduced optimization time by 60.8% and PLY size by 65.6%, while LPIPS worsened (0.4633 versus 0.3516). See [performance evidence](docs/reference/performance.md).
 
-**Visual outputs:** a real local WebGL interaction and a private 39.97-second reference / prediction / error video were validated. Benchmark-derived RGB/video are excluded from this public repository pending redistribution review. The charts above are measured evidence, not reconstruction images. See [demo record](docs/demo.md).
+**Visual outputs:** a real local WebGL interaction and a private 39.97-second reference / prediction / error video were validated. Benchmark-derived RGB/video are excluded from this public repository pending redistribution review. The charts above are measured evidence, not reconstruction images. See [demo record](docs/reference/demo.md).
 
-## Read by purpose
+## Repository map
 
-| You want to… | Open |
-|---|---|
-| Understand the research story in a few minutes | [中文项目报告](docs/project_report_zh.md) |
-| Inspect exact measurements and run IDs | [Experiment index](reports/experiment_index.md) |
-| Audit failures and historical corrections | [Detailed evidence status](docs/evidence_status.md), [failure analysis](docs/failure_analysis.md) |
-| Reproduce the workflow | [Reproduction](docs/reproduction.md), [protocol](docs/protocol.md) |
-| Check authorship and technical scope | [Contributions](docs/contributions.md) |
+| Directory | Responsibility | Start here |
+|---|---|---|
+| `docs/` | Main report and reproduction; details in `reference/` | [Project report](docs/project_report_zh.md) |
+| `reports/` | Evidence index; raw receipts in `evidence/` | [Evidence index](reports/README.md) |
+| `bgs/` | Runtime: staging, initialization, training, queue | [Architecture](docs/reference/architecture.md) |
+| `scripts/` | Tools grouped by setup / experiments / diagnostics / evaluation / presentation | [Tool map](scripts/README.md) |
+| `configs/` | Run configuration and frozen experiment declarations | [Example](configs/run.example.json) |
+| `tests/` | Workflow and numerical contracts | `python -m unittest discover -s tests -v` |
 
 ## Quick checks
 
@@ -52,7 +53,7 @@ python -m bgs --help
 python -m bgs.queue --help
 ```
 
-Optional chart regeneration (requires matplotlib): `python scripts/build_presentation_figures.py`.
+Optional chart regeneration (requires matplotlib): `python scripts/presentation/build_presentation_figures.py`.
 
 ## Current boundaries
 
