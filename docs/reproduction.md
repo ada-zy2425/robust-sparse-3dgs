@@ -13,9 +13,52 @@ This is the operational reference. For the research story, read the [project rep
 | `scripts/render_benchmark.py` | Measure a completed checkpoint read-only |
 | `scripts/report.py` | Verify published evidence / regenerate figures |
 | `scripts/setup/` | Data acquisition, source setup and manifest validation |
-| `scripts/diagnostics/` | Initialization, perturbation and resume probes |
+| `scripts/diagnostics/` | Initialization, perturbation, rotation transfer, counterexample and resume probes |
 
 Use `--help` on each entry, or `COMMAND --help` for its argument contract. Old task receipts remain historical; regenerate command paths for this checkout.
+
+<a id="rotation-transfer-v9"></a>
+## Frozen v9 rotation-transfer result
+
+The public machine summary is [`reports/rotation_transfer_v9.json`](../reports/rotation_transfer_v9.json). It records all 48 held-out A/C rows, pose summaries, denominators, config/task hashes, failure costs and the CPU counterexample diagnosis without copying dataset RGB, checkpoints, PLYs or process logs. Verify the ledger and regenerate the measured SVG with:
+
+```bash
+python -m unittest discover -s tests -v
+python scripts/report.py --verify
+python scripts/report.py --figures
+```
+
+The four files in [`configs/rotation_transfer_v9/`](../configs/rotation_transfer_v9/) are the immutable machine snapshots for the successful 7k endpoints. Their absolute paths and pre-submission status fields are historical provenance, not portable templates. On the original evidence mount, the exact runner can recheck a task without launching training:
+
+```bash
+python scripts/diagnostics/fixed_camera_rotation_transfer_v9.py \
+  --config configs/rotation_transfer_v9/garden_p3141_C.json \
+  --validate-only
+```
+
+For a new run, create a new run/task/output identity and regenerate every path/hash field. Do not edit a historical snapshot in place. Construct C from ordered OpenCV c2w arrays without reference poses:
+
+```bash
+python scripts/diagnostics/build_rotation_only_camera_override.py \
+  --a /new/run/perturbed_A.json \
+  --ba /new/run/standard_ba_B.json \
+  --seed 3141 --out /new/run/rotation_only_C.json
+```
+
+The builder performs exactly `C[:3,:3] = B[:3,:3]` and `C[:3,3] = A[:3,3]`: it preserves world-space camera centers, not w2c translation vectors. The fixed-camera runner then builds the normal Gaussian initialization, checks source/model/image/code hashes, replaces the ordered training camera array exactly once, proves Gaussian/intrinsic identity, disables pose optimization and verifies the terminal camera hash. A and C must share initialization, intrinsics, normalization, held-out transform, image stream, training seed 42, 7k optimizer/structure schedule and the 24/24 split. BA-reconstructed points never enter GS.
+
+The published DSC08108 post-hoc result is reproducible from existing run caches, without CUDA:
+
+```bash
+python scripts/diagnostics/diagnose_rotation_transfer_counterexample.py \
+  --a-training-dir /evidence/garden_seed3141_A/training \
+  --c-training-dir /evidence/garden_seed3141_C/training \
+  --image DSC08108.JPG \
+  --out /tmp/dsc08108_diagnosis.json \
+  --public-figure /tmp/dsc08108_prediction_error.png
+```
+
+It consumes separately saved 1k/3k/7k metric JSON and three-panel PNG caches. The generated public figure contains model predictions and derived error maps, not target RGB. PNG PSNR recomputation is explicitly diagnostic; the stored float metrics remain authoritative.
 
 
 These commands are the exercised single-node workflow. Dataset RGB, model weights and checkpoints are not committed. Use a licensed local dataset copy and the two project-local environments; do not replace system CUDA or PyTorch.

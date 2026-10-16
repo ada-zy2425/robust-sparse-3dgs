@@ -34,9 +34,19 @@ def verify(root: Path = ROOT) -> dict:
         for record in records:
             sources = list(record['records'].values()) if 'records' in record else [record]
             for source in sources:
-                raw = z.read(source['archive_path'])
-                if hashlib.sha256(raw).hexdigest() != source['sha256'] or json.loads(raw) != source['data']:
-                    raise ValueError(f'Ledger differs from archived source: {source["archive_path"]}')
+                if 'file_path' in source:
+                    raw = (root / source['file_path']).read_bytes()
+                else:
+                    raw = z.read(source['archive_path'])
+                if hashlib.sha256(raw).hexdigest() != source['sha256']:
+                    location = source.get('file_path', source.get('archive_path'))
+                    raise ValueError(f'Ledger differs from evidence source: {location}')
+                if 'data' in source and json.loads(raw) != source['data']:
+                    location = source.get('file_path', source.get('archive_path'))
+                    raise ValueError(f'Ledger data differs from evidence source: {location}')
+            for path, expected in record.get('artifacts', {}).items():
+                if hashlib.sha256((root / path).read_bytes()).hexdigest() != expected:
+                    raise ValueError(f'Published artifact integrity mismatch: {path}')
     return ledger
 
 
@@ -80,6 +90,35 @@ def build_figures(ledger: dict, root: Path = ROOT) -> None:
     fig.get_layout_engine().set(rect=(0,.10,1,.90))
     fig.text(.5,.025,'Fixed points, intrinsics, RGB, alignment and held-out cameras. One training seed / one noise draw.',ha='center',fontsize=9)
     fig.savefig(out/'pose_sensitivity.svg',metadata={'Date':None}); plt.close(fig)
+    v9_record = ledger['records']['rotation_transfer_v9']
+    v9 = v9_record.get('data') or json.loads((root / v9_record['file_path']).read_text())
+    seeds = ['2718','3141']
+    colors = ['#167d9a','#7b61b5']
+    fig, axes = plt.subplots(1,3,figsize=(12,4.2),layout='constrained')
+    recovery = [v9['per_seed'][seed]['pose']['injected_rotation_recovery_percent'] for seed in seeds]
+    relative = [100*v9['per_seed'][seed]['pose']['all_pairs_relative_rotation_fractional_improvement'] for seed in seeds]
+    x = range(len(seeds)); width = .34
+    axes[0].bar([i-width/2 for i in x],recovery,width,color=colors[0],label='Injected rotation')
+    axes[0].bar([i+width/2 for i in x],relative,width,color=colors[1],label='All-pairs relative')
+    axes[0].set_xticks(list(x),seeds); axes[0].set_ylim(0,105); axes[0].set_ylabel('Improvement (%)')
+    axes[0].set_title('Pose signal',loc='left',weight='bold'); axes[0].legend(frameon=False,fontsize=8)
+    psnr = [v9['per_seed'][seed]['C_minus_A_mean']['psnr'] for seed in seeds]
+    axes[1].bar(seeds,psnr,color=colors); axes[1].axhline(.5,color='#d06b42',ls='--',lw=1,label='frozen gate')
+    axes[1].set_ylim(0,3); axes[1].set_ylabel('C − A PSNR (dB)'); axes[1].set_title('Held-out quality',loc='left',weight='bold')
+    axes[1].legend(frameon=False,fontsize=8)
+    ssim = [v9['per_seed'][seed]['C_minus_A_mean']['ssim'] for seed in seeds]
+    lpips = [-v9['per_seed'][seed]['C_minus_A_mean']['lpips'] for seed in seeds]
+    axes[2].bar([i-width/2 for i in x],ssim,width,color=colors[0],label='SSIM gain')
+    axes[2].bar([i+width/2 for i in x],lpips,width,color=colors[1],label='LPIPS reduction')
+    axes[2].set_xticks(list(x),seeds); axes[2].set_ylim(0,.27); axes[2].set_title('Perceptual metrics',loc='left',weight='bold')
+    axes[2].legend(frameon=False,fontsize=8)
+    for ax in axes:
+        ax.set_xlabel('Perturbation seed'); ax.grid(axis='y',alpha=.15); ax.set_axisbelow(True)
+        for container in ax.containers:
+            ax.bar_label(container,fmt='%.2f',padding=3,fontsize=8,weight='bold')
+    fig.get_layout_engine().set(rect=(0,.12,1,.91))
+    fig.text(.5,.025,'Garden historical-development scene · 24 train / 24 held-out · 7k · training seed 42 · standard BA owns step-0 pose recovery.',ha='center',fontsize=9)
+    fig.savefig(out/'rotation_transfer_v9.svg',metadata={'Date':None}); plt.close(fig)
     for path in out.glob('*.svg'):
         path.write_text('\n'.join(line.rstrip() for line in path.read_text().splitlines())+'\n')
 

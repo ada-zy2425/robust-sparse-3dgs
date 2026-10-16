@@ -1,0 +1,130 @@
+{
+  "arm": "C_ba_rotation_input_center_fixed",
+  "camera_override": {
+    "path": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/attempt_r2/camera_overrides/garden_p2718_C.json",
+    "sha256": "0056ce57fd77d769bf1122a5945387aa3cef96f335462ad70f816db3d98b6ae6"
+  },
+  "cpu_admission": {
+    "path": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/attempt_r2/cpu/seed_2718/evaluation.json",
+    "sha256": "86f3ffa6ab59015772d0db981ee38dd35991b88e0a98f4e10b89c470fa334b6c"
+  },
+  "identities": {
+    "asset_receipt_sha256": "bee8ced491218a92d7b151f5e3f5ce619c50509122f37f0e55769c33822a9ba4",
+    "core_source_sha256": {
+      "bgs/__init__.py": "8c72c192e86ba55ffe4e887d936683dbbee85ed71601c76d3bae0472b066349b",
+      "bgs/__main__.py": "ae2137e6222661fecb32be73681735d74374e712e87924c77ecbda42d875024f",
+      "bgs/core.py": "72d608a3d89f7e36d9182a66c33f4b68ef2463449e2e81bf69dc9117e362d98b",
+      "bgs/data.py": "c6479c635a50207b6212c9dbfa297e7dde8ff2c976983e79f1fcd6d04314d16e",
+      "bgs/geometry.py": "200b88d9305255052b3d9a195d5e6b369aac04a41ab227bb39b2c7e61978236c",
+      "bgs/initialize.py": "d2ab6ae44905e6c9f5b139199f9b546559f4fbed461c4211b33590c030a64896",
+      "bgs/pipeline.py": "83e73e75f80b938afcc72183eca8c35365398ba4254c2026fd39b241a38463b8",
+      "bgs/preflight.py": "764fa128ba2af41473d7ac218fe6ec8ffee00be6f028059e3a68302105317b5c",
+      "bgs/queue.py": "c600206bc3a862ca5bb859257addffb924eb0c8793e8bc8dee62762a6f6434f8",
+      "bgs/splat_numerics.py": "d816d58ae3152e83ddde646bf7c620bbf4e79e15810da2ac51a72feff792c7a9",
+      "bgs/train_adapter.py": "c888d5b2ba6566dc1eaea9d0007299f1ec7b4e6e7033d8fbad3b877f9e6e56cd",
+      "bgs/vggt_ba_pair.py": "f51f5996c28864b0d090f065633ac9361ce8a72a82e64841161cb359216a3b84",
+      "bgs/vggt_wrapper.py": "e79c2e3456e4e61b62f7fa34839fdaa454e9679b3a5e82d1d3a7e899c364c390"
+    },
+    "manifest_sha256": "da3b4afd1205355421344ff138be23461587df60892be48c92e6bd402863c2fc",
+    "solver_input_sha256": "ded690871cbf8f1de27a199e696ea43b9ca34ee19e100a87f013e4b2673a6bc0",
+    "solver_result_sha256": "45bc5b6cf4ae22a45c9a4f118de2b5d77f00410b3f2fdc6919debca21f4d862f",
+    "upstream_lock_sha256": "56750d09da0fddb1c0e9994a185a6deb72e2f6362f516a8eb763f0818bc25ea1"
+  },
+  "numeric_tolerance": {
+    "anchor_c2w_max_abs": 1e-12,
+    "c2w_w2c_roundtrip_max_abs": 1e-12,
+    "homogeneous_row_max_abs": 1e-12,
+    "rotation_determinant_max_abs": 1e-10,
+    "rotation_orthogonality_max_abs": 1e-10,
+    "runtime_fixed_camera_max_abs": 1e-12
+  },
+  "outer_bounded_queue_contract": {
+    "automatic_retries": 0,
+    "complete_matrix_submitted_together": false,
+    "gpu_count": 1,
+    "gpu_index": 0,
+    "gpu_uuid": "GPU-22af925b-7015-e540-9ad0-5f9bb1727bc3",
+    "max_gpu_hours": 1.5,
+    "required": true,
+    "timeout_s": 5400
+  },
+  "output_dir": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/runs_retry_authorized_02/m360_garden_dev_v24_vggt_ba_post_ba_rotkeepcenter_fixed_p2718_s42_7k_v9_C_retry_authorized_02/training",
+  "perturbation_seed": 2718,
+  "project_root": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial",
+  "protocol_id": "rotation_transfer_cross_scene_confirmation_v9",
+  "retry_authorization": {
+    "authorization_scope": "missing Garden 2718/C only",
+    "automatic_retry": false,
+    "global_attempt_ordinal": 3,
+    "kind": "one newly authorized engineering-fix technical rerun",
+    "loads_failed_checkpoint": false,
+    "preserved_failures": [
+      "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/runs/m360_garden_dev_v24_vggt_ba_post_ba_rotkeepcenter_fixed_p2718_s42_7k_v9_C/training",
+      "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/runs_retry_authorized_01/m360_garden_dev_v24_vggt_ba_post_ba_rotkeepcenter_fixed_p2718_s42_7k_v9_C_retry_authorized_01/training"
+    ],
+    "restart_from_step": 0,
+    "watchdog_fix": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/watchdog_fix_v2",
+    "watchdog_target_verification_sha256": "f87c6a50145f49b174bafd8247e755d960ed308c2aff4f2644cc6416bf0dbf55"
+  },
+  "runner_sha256": "5bcc2f5f858b7d289b6fe5a2a34a56277a94d1a8e6e49b5101883e765bcaee1e",
+  "scene": "garden",
+  "schema": 1,
+  "source_input": {
+    "init_receipt_sha256": "3f0788dae7d0f115e5df5d3441a446079b59d6bff142b4d5c61b39962c6b6d32",
+    "model_file_sha256": {
+      "cameras.bin": "230ec354dca7ad930d6eb76f980314e92ea03c8776485fc8890c4950951b4518",
+      "images.bin": "6158a54f0e1a6d6488f3922c6b89b9f762d9589df793fe21645595a695f67398",
+      "points3D.bin": "62a81f5be381042cfb53519f46eb3caf08381c2d4f6898412bbacd652d1d3851"
+    },
+    "path": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/assets/garden_post_ba_input",
+    "reuse_mode": "one common legal v9 post_ba source; BA points are not substituted per seed",
+    "staging_sha256": "210a61ab8b968598ca8ac988cccf82abd4d3865feb408f3db966005de2568d6b"
+  },
+  "spec": {
+    "cache_images": false,
+    "checkpoint_every": 100,
+    "densification_policy": "default",
+    "diagnostic_steps": [
+      1000,
+      3000,
+      7000
+    ],
+    "dinov2_root": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/cache/torch/hub/facebookresearch_dinov2_main",
+    "gpu": "0",
+    "gpu_hours": 1.5,
+    "gsplat_root": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/third_party/gsplat",
+    "hypothesis": "Frozen v8 rotation-only transfer confirms across Garden and two preregistered perturbations.",
+    "independent_contribution": "Cross-scene/cross-perturbation realization test; standard BA owns step-0 pose recovery.",
+    "initializer": "vggt",
+    "manifest": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/manifests/mipnerf360_dev_v1/m360_garden_dev_v24.json",
+    "max_edge": 1024,
+    "max_gaussians": 2000000,
+    "noise_seed": 2718,
+    "pose_absorption_arm": "C_ba_rotation_input_center_fixed",
+    "pose_absorption_protocol": "rotation_transfer_cross_scene_confirmation_v9",
+    "pose_opt": false,
+    "pose_opt_lr": 1e-05,
+    "pose_opt_reg": 1e-06,
+    "python": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/envs/gsplat/bin/python",
+    "root": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/runs_retry_authorized_02/m360_garden_dev_v24_vggt_ba_post_ba_rotkeepcenter_fixed_p2718_s42_7k_v9_C_retry_authorized_02",
+    "rotation_degrees": 1.0,
+    "run_id": "m360_garden_dev_v24_vggt_ba_post_ba_rotkeepcenter_fixed_p2718_s42_7k_v9_C_retry_authorized_02",
+    "scope": "Garden historical-development cross-scene confirmation; final_v1 sealed.",
+    "seed": 42,
+    "splat_numerics_policy": "dtype_scene_scale_floor_v1",
+    "steps": 7000,
+    "timeout_s": 5400,
+    "translation_fraction": 0.0,
+    "vggt_ba": true,
+    "vggt_ba_ablation_arm": "post_ba",
+    "vggt_ba_pair_generate": false,
+    "vggt_ba_pair_root": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/work/rotation_transfer_cross_scene_confirmation_v9/assets/garden_v24_s42_ba_pair",
+    "vggt_confidence": 5.0,
+    "vggt_max_points": 100000,
+    "vggt_point_sampling": "upstream_seeded_random_limit",
+    "vggt_python": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/envs/vggt/bin/python3.10",
+    "vggt_root": "/ML-vePFS/infra_rd/kun/others/Liz/bgs_industrial/third_party/vggt"
+  },
+  "status": "PREPARED_NOT_STARTED",
+  "task_id": "m360_garden_dev_v24_vggt_ba_post_ba_rotkeepcenter_fixed_p2718_s42_7k_v9_C_retry_authorized_02"
+}

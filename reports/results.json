@@ -6143,6 +6143,33 @@
           }
         }
       }
+    },
+    "rotation_transfer_v9": {
+      "file_path": "reports/rotation_transfer_v9.json",
+      "sha256": "588f614f75c3c2b51754bd58b69418ce550d0bc00cb2bc2b00eda23f169e35a7",
+      "summary": {
+        "decision": "CROSS_SCENE_CONFIRMATION_PASS",
+        "scene": "Garden",
+        "perturbation_seeds": [
+          2718,
+          3141
+        ],
+        "C_minus_A_mean": {
+          "2718": {
+            "lpips": -0.20505939672390622,
+            "psnr": 2.6125974655151367,
+            "ssim": 0.2305622554073731
+          },
+          "3141": {
+            "lpips": -0.19224904105067253,
+            "psnr": 2.3465503454208374,
+            "ssim": 0.2268277270098527
+          }
+        }
+      },
+      "artifacts": {
+        "docs/figures/garden_3141_dsc08108_counterexample.png": "26d5a349acccb55a88a5e24c221c6927724f97847b15fd838b514fe389d7cd3c"
+      }
     }
   }
 }

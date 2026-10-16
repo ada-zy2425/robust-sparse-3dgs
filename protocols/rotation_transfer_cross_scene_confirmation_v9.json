@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "protocol_id": "rotation_transfer_cross_scene_confirmation_v9",
+  "frozen_date": "2026-10-16",
+  "status": "FROZEN_BLOCKED_PRE_SUBMISSION",
+  "research_question": "Does the frozen v8 rotation-only camera transfer realize standard-BA pose gains on Garden for two preregistered perturbation seeds at the common 7000-step endpoint?",
+  "claim_boundary": "Garden is a historical development scene selected before v7 rendering results. V9 is a cross-scene confirmation outside the Bonsai/Room mechanism-design scenes, not a never-used external test set and not final_v1.",
+  "method_frozen_from_v8": {
+    "A": "Construct the normal post-BA VGGT Gaussian initialization, apply the registered 1-degree zero-translation perturbation in the normalized trainer frame, and keep those training cameras fixed for all 7000 steps.",
+    "C": "Use the identical normal post-BA VGGT Gaussian initialization; set each OpenCV c2w rotation to the train-only standard-BA output and retain that camera's A world-space center exactly; keep cameras fixed for all 7000 steps.",
+    "comparison": "A versus C; the obsolete v7 A-versus-B Garden draft is not executed.",
+    "standard_ba_credit": "All step-0 pose recovery belongs to established standard BA. V9 tests only cross-scene/cross-perturbation downstream realization of the frozen v8 transfer.",
+    "no_development_or_tuning": true,
+    "reference_pose_used_to_generate_C": false,
+    "ba_points_enter_GS": false
+  },
+  "scene_and_seeds": {
+    "scene": "garden",
+    "partition": "development",
+    "selection_provenance": "Sole existing Mip-NeRF 360 development-v24 scene not used in v3-v6 design; frozen in v7 before its rendering results.",
+    "manifest": "manifests/mipnerf360_dev_v1/m360_garden_dev_v24.json",
+    "manifest_sha256": "da3b4afd1205355421344ff138be23461587df60892be48c92e6bd402863c2fc",
+    "reference": "references/m360_garden_v1.json",
+    "reference_sha256": "f5fb6ea061ffa9a18d685e69b352f090c2e6280bc352460779dbff6b7348b6e4",
+    "training_images": 24,
+    "heldout_images": 24,
+    "perturbation_seeds": [2718, 3141],
+    "training_seed": 42,
+    "rotation_degrees": 1.0,
+    "translation_fraction": 0.0,
+    "camera_zero_unperturbed": true
+  },
+  "legal_asset_generation": {
+    "status": "REQUIRED_NOT_STARTED",
+    "output_pair": "work/rotation_transfer_cross_scene_confirmation_v9/assets/garden_v24_s42_ba_pair",
+    "input": "Exactly the 24 manifest training RGB files; no held-out image, reference pose, historical 3D coordinate, or final_v1 asset.",
+    "preprocessing": "Normal project staging copies byte-identical selected training files into a flat images directory and writes a train_only staging receipt. The pinned demo's load_and_preprocess_images_square uses size 1024 and the paired adapter maps coordinates back to original image pixels.",
+    "fixed_pipeline": "bgs.vggt_ba_pair patches the single official pycolmap.bundle_adjustment call, snapshots the one pre-BA tracked reconstruction, makes distinct pre/post objects, runs official BA only on post, and emits immutable pre_ba/post_ba plus hashes.",
+    "fixed_settings": {
+      "VGGT_seed": 42,
+      "tracker": "VGGSfM predict_tracks (ALIKED + SuperPoint)",
+      "track_visibility_threshold": 0.2,
+      "max_query_points": 4096,
+      "query_frames": 8,
+      "fine_tracking": true,
+      "max_reprojection_error_px": 8.0,
+      "camera_model": "SIMPLE_PINHOLE",
+      "shared_camera": false,
+      "confidence_cli_value_inactive_in_ba_branch": 5.0
+    },
+    "historical_post_ba_model_relabel_forbidden": true,
+    "historical_non_ba_feedforward_model_as_track_source_forbidden": true,
+    "matching_or_filter_sweep_forbidden": true,
+    "large_model_download_forbidden": true
+  },
+  "standard_ba": {
+    "implementation": "The executed v6 CPU COLMAP 3.13/Ceres standard-BA implementation, adapted only for Garden and perturbation seed identity.",
+    "per_seed": true,
+    "input_cameras": "A perturbed OpenCV c2w in the normalized trainer frame",
+    "input_tracks": "Complete train-only pre_ba track identities; split by whole track before triangulation",
+    "fit_fraction": 0.8,
+    "check_tracks_evaluator_only": true,
+    "intrinsics_fixed": true,
+    "gauge": "camera 0 full pose plus one camera 1 translation component, matching v6",
+    "loss": "Cauchy, 4 px",
+    "iterations": 100,
+    "parameter_or_threshold_search": false,
+    "reference_or_nominal_pose_visible_to_solver": false,
+    "accepted_track_observations": "All observations belonging to each accepted/triangulated fit track enter Cauchy BA; the triangulation RANSAC mask is recorded but is not a BA-observation filter."
+  },
+  "coordinate_projection_admission": {
+    "must_pass_before_GPU_submission": true,
+    "original_points_only": "Use the common post_ba initialization points and their legally traced 2D track mapping; do not substitute re-triangulated BA points.",
+    "normalization": "Apply the exact pinned gsplat Parser transform jointly to original points and source cameras before any normalized-frame projection.",
+    "raw_normalized_projection_invariance_max_abs_px": 1e-6,
+    "required_contracts": [
+      "complete ordered train camera identity and c2w/w2c roundtrip",
+      "A is byte-compatible with bgs.geometry perturbation for the registered seed",
+      "C rotation equals standard-BA rotation exactly",
+      "C world center equals A world center exactly",
+      "camera 0 C-versus-A maximum absolute difference <=1e-12",
+      "fixed common-observation residuals are finite and full/valid failure denominators are reported",
+      "no raw point is projected with a normalized camera"
+    ],
+    "quality_threshold_or_reference_pose_selection": false
+  },
+  "training_contract": {
+    "arms_per_seed": ["A_original_perturbed_fixed", "C_ba_rotation_input_center_fixed"],
+    "steps": 7000,
+    "max_edge": 1024,
+    "diagnostic_steps": [1000, 3000, 7000],
+    "common_primary_endpoint": 7000,
+    "pose_opt": false,
+    "densification_policy": "default",
+    "splat_numerics_policy": "dtype_scene_scale_floor_v1",
+    "cache_images": false,
+    "max_gaussians": 2000000,
+    "same_between_arms": [
+      "post_ba Gaussian initialization files and initial tensor hashes",
+      "intrinsics and Parser normalization",
+      "training-only fitted held-out transform",
+      "training image sequence and seed",
+      "optimizers, learning-rate clocks and structural strategy",
+      "held-out image identities and evaluator"
+    ],
+    "camera_override_application_count": 1,
+    "terminal_camera_max_abs_change": 0.0,
+    "posthoc_alignment_refit_forbidden": true,
+    "intermediate_checkpoint_selection_forbidden": true
+  },
+  "acceptance": {
+    "per_seed_all_required": {
+      "controlled_injected_rotation_recovery_percent_min": 25.0,
+      "all_pairs_relative_rotation_fractional_improvement_min": 0.25,
+      "C_minus_A_PSNR_db_min": 0.50,
+      "C_minus_A_SSIM_min": -0.01,
+      "C_minus_A_LPIPS_max": 0.02,
+      "all_technical_contracts": true,
+      "complete_camera_and_heldout_denominators": true
+    },
+    "confirmation_pass": "Both seeds pass every pose, rendering, technical and denominator gate at step 7000.",
+    "one_seed_or_one_metric_is_insufficient": true,
+    "isolated_camera_nodes_retained": true,
+    "BA_step0_pose_gain_not_claimed_as_v9_method_gain": true
+  },
+  "budget": {
+    "campaign_limit_gpu_hours": 12.0,
+    "charged_before_v9_gpu_hours": 9.697658324357022,
+    "reserved_before_v9_gpu_hours": 0.0,
+    "available_before_v9_gpu_hours": 2.302341675642978,
+    "historical_compatible_garden_asset_actual_gpu_hours": 0.02533447363672571,
+    "historical_compatible_garden_7k_actual_gpu_hours_per_task": 1.1168311479936044,
+    "point_floor_asset_plus_four_training_gpu_hours": 4.492659065611143,
+    "point_floor_shortfall_gpu_hours": 2.190317389968165,
+    "asset_preparation_upper_bound_gpu_hours": 0.10,
+    "four_training_and_evaluation_upper_bound_gpu_hours": 6.0,
+    "other_GPU_checks_upper_bound_gpu_hours": 0.02,
+    "complete_conservative_upper_bound_gpu_hours": 6.12,
+    "conservative_shortfall_gpu_hours": 3.817658324357022,
+    "per_training_task_bound_gpu_hours": 1.5,
+    "per_training_task_timeout_seconds": 5400,
+    "automatic_retries": 0,
+    "failed_attempts_are_charged": true,
+    "admission": "BLOCKED: complete upper bound does not fit the actual campaign balance; do not reserve or submit any GPU task.",
+    "no_automatic_campaign_increase": true
+  },
+  "stopping_rule": "With the current budget or legal pair absent, produce a BLOCKED pre-submission report only. Do not run a partial seed/arm, reduce resolution/views/steps, inspect Garden held-out quality, or start asset inference. A future explicit budget increase must first rerun the identity, asset, projection and budget gates without changing this science protocol.",
+  "v8_append_only_review_notes": [
+    "Bonsai C-minus-B SSIM is -0.0012243172606907216; v8 did not improve all three C-versus-B rendering metrics.",
+    "For LPIPS deltas, lower is better. V8's generic ascending sorter stored the best five LPIPS changes under worst_five and the worst five under best_five; numerical values are retained and labels must be interpreted in reverse for LPIPS only."
+  ],
+  "preservation": {
+    "v3_repair_accepted": false,
+    "v7_status": "COMPLETE_DEVELOPMENT_FAILED",
+    "v8_status": "COMPLETE_DEVELOPMENT_PASS_NO_CONFIRMATION_LAUNCHED",
+    "final_v1_opened": false,
+    "main_pushed": false,
+    "publication_checkout_created": false,
+    "git_init": false
+  }
+}

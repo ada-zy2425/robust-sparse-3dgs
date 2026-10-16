@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "protocol_id": "rotation_transfer_cross_scene_confirmation_v9",
+  "base_protocol": "rotation_transfer_cross_scene_confirmation_v9.json",
+  "base_protocol_sha256": "ba288a4c8cc789efa84ad15b5b2f26f637fdeb56688837e555f3f0e773a099f7",
+  "status": "HISTORICAL_EXECUTION_AMENDMENTS",
+  "science_contract_changed": false,
+  "amendments": [
+    {
+      "kind": "budget_authorization",
+      "campaign_cap_gpu_hours_before": 12.0,
+      "campaign_cap_gpu_hours_after": 16.0,
+      "v9_cap_gpu_hours": 6.12,
+      "scope": "Complete only the frozen Garden A/C matrix. No tuning or additional mechanism."
+    },
+    {
+      "kind": "technical_retry",
+      "attempt": "retry_authorized_01",
+      "task": "Garden perturbation seed 2718 arm C",
+      "restart_from_step": 0,
+      "resume": false,
+      "outcome": "TECHNICAL_FAILURE_MONITOR_PID_NAMESPACE_AMBIGUITY"
+    },
+    {
+      "kind": "engineering_fix_and_final_technical_retry",
+      "attempt": "retry_authorized_02",
+      "task": "Garden perturbation seed 2718 arm C",
+      "restart_from_step": 0,
+      "resume": false,
+      "scientific_differences": [],
+      "outcome": "SUCCEEDED_7000_STEPS"
+    }
+  ],
+  "terminal": {
+    "decision": "CROSS_SCENE_CONFIRMATION_PASS",
+    "v9_gpu_hours": 5.692588706744008,
+    "campaign_gpu_hours": 15.39024703110103,
+    "campaign_cap_gpu_hours": 16.0,
+    "reserved_gpu_hours": 0.0,
+    "publication_round_gpu_hours": 0.0
+  },
+  "preservation": {
+    "v3_repair_accepted": false,
+    "v7_status": "FAIL",
+    "v8_status": "PASS_DEVELOPMENT",
+    "technical_failures_retained": true,
+    "final_v1_opened": false
+  }
+}
